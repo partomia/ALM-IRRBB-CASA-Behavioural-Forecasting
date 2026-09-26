@@ -49,7 +49,7 @@ CDW  Hue reports, time travel     CAI  Streamlit app + model endpoint
   rolling backtest, storage backends (Impala / parquet). Unit tests with a stub model.
 - [x] **4. Monthly job** — CAI job + backfill drill (three month-end as-of dates) for the
   ALCO history and time travel.
-- [ ] **5. Model endpoint** — `predict.py` with stress input, test script.
+- [x] **5. Model endpoint** — `predict.py` with stress input, test script.
 - [ ] **6. Streamlit app** — CAI Application launcher + Dockerfile for running elsewhere
   from parquet or Impala.
 - [ ] **7. Orchestration + docs** — Airflow DAG, CDE deploy scripts, Hue SQL, README,
