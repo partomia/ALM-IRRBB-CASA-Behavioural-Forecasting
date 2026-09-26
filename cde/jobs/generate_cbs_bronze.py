@@ -56,7 +56,7 @@ DUPLICATE_RATE = 0.0002  # re-sent CBS records, removed in silver
 # base_cr: balance at HISTORY_START in INR crore; growth: annual log growth;
 # salary: month-cycle amplitude; qe/ye: quarter-end / March spike;
 # festival: Oct-Nov effect; rate_beta: share lost at the peak of the hike cycle;
-# vol: weekly shock volatility.
+# vol: weekly shock volatility; regime (optional): (date, growth) from that date on.
 SEGMENTS = [
     dict(segment_id="SA_RETAIL_URBAN", product="SA", cust_type="RETAIL_URBAN",
          irrbb_category="retail_transactional", segment_name="Savings - retail urban",
@@ -78,7 +78,8 @@ SEGMENTS = [
          base_cr=7800, growth=0.050, salary=0.010, qe=0.000, ye=0.000, festival=0.000, rate_beta=0.100, vol=0.005),
     dict(segment_id="SA_HNI", product="SA", cust_type="HNI",
          irrbb_category="retail_non_transactional", segment_name="Savings - high net worth",
-         base_cr=5200, growth=0.050, salary=0.000, qe=0.010, ye=0.000, festival=0.000, rate_beta=0.180, vol=0.012),
+         base_cr=5200, growth=0.050, salary=0.000, qe=0.010, ye=0.000, festival=0.000, rate_beta=0.180, vol=0.020,
+         regime=(date(2025, 7, 1), -0.40)),  # drift to wealth products / sweep-in FDs
     dict(segment_id="SA_NRI", product="SA", cust_type="NRI",
          irrbb_category="retail_non_transactional", segment_name="Savings - NRE / NRO",
          base_cr=3600, growth=0.060, salary=0.000, qe=0.000, ye=0.000, festival=0.020, rate_beta=0.080, vol=0.010),
@@ -99,7 +100,7 @@ SEGMENTS = [
          base_cr=2000, growth=0.040, salary=0.000, qe=0.020, ye=0.040, festival=0.000, rate_beta=0.050, vol=0.010),
     dict(segment_id="CA_BANKS_FI", product="CA", cust_type="BANK_FI",
          irrbb_category="wholesale", segment_name="Current - banks and financial institutions",
-         base_cr=1500, growth=0.020, salary=0.000, qe=0.080, ye=0.080, festival=0.000, rate_beta=0.120, vol=0.030),
+         base_cr=1500, growth=0.020, salary=0.000, qe=0.080, ye=0.080, festival=0.000, rate_beta=0.120, vol=0.100),
 ]
 
 # Share of rate-sensitive balance that has left, by date (piecewise linear).
@@ -163,13 +164,15 @@ def simulate_segment(seg: dict, end: date, seed: int) -> list[tuple[date, float]
     """
     rng = random.Random(f"{seed}:{seg['segment_id']}")
     daily_sd = seg["vol"] / math.sqrt(7)
+    regime_start, regime_growth = seg.get("regime", (WORLD_END, 0.0))
     shock = 0.0
     out = []
     d = HISTORY_START
     while d <= end:
-        t = (d - HISTORY_START).days / 365.25
+        t = (min(d, regime_start) - HISTORY_START).days / 365.25
+        t_regime = max(0, (d - regime_start).days) / 365.25
         shock = 0.995 * shock + rng.gauss(0.0, daily_sd)
-        level = seg["base_cr"] * math.exp(seg["growth"] * t + shock)
+        level = seg["base_cr"] * math.exp(seg["growth"] * t + regime_growth * t_regime + shock)
         level *= 1.0 - seg["rate_beta"] * rate_cycle_outflow(d)
         level *= 1.0 + seg["salary"] * salary_shape(d)
         level *= 1.0 + seg["qe"] * quarter_end_shape(d) + seg["ye"] * year_end_shape(d)

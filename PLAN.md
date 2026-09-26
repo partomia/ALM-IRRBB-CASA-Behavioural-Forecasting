@@ -45,9 +45,9 @@ CDW  Hue reports, time travel     CAI  Streamlit app + model endpoint
   prefix-stable so a later as-of date only adds weeks.
 - [x] **2. Silver + gold** — validation gate, daily segment totals, weekly roll-up
   (complete Sat–Fri weeks only), MERGE into gold. Verified locally on Spark + Iceberg.
-- [ ] **3. Core logic** (`casa/`) — TimesFM wrapper, core split with caps, SLS slotting,
+- [x] **3. Core logic** (`casa/`) — TimesFM wrapper, core split with caps, SLS slotting,
   rolling backtest, storage backends (Impala / parquet). Unit tests with a stub model.
-- [ ] **4. Monthly job** — CAI job + backfill drill (three month-end as-of dates) for the
+- [x] **4. Monthly job** — CAI job + backfill drill (three month-end as-of dates) for the
   ALCO history and time travel.
 - [ ] **5. Model endpoint** — `predict.py` with stress input, test script.
 - [ ] **6. Streamlit app** — CAI Application launcher + Dockerfile for running elsewhere
