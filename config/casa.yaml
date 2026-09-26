@@ -31,12 +31,12 @@ storage:
   parquet_dir: data/parquet
 
 impala:
-  host: ""                          # CASA_IMPALA_HOST, e.g. <cdw-impala-vw-host>
+  host: coordinator-default-impala-aws.dw-go01-demo-aws.ylcu-atmi.cloudera.site  # CASA_IMPALA_HOST
   port: 443
   http_path: cliservice
   use_ssl: true
   use_http_transport: true
-  auth_mechanism: LDAP              # LDAP (workload user/password) or GSSAPI (kinit)
+  auth_mechanism: LDAP              # workload user/password; the JDBC URL's browser SSO (AuthMech=12) is interactive only
   kerberos_service_name: impala
   user: ""                          # CASA_IMPALA_USER
   password: ""                      # CASA_IMPALA_PASSWORD (never commit)
