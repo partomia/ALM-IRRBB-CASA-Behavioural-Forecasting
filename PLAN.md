@@ -52,7 +52,7 @@ CDW  Hue reports, time travel     CAI  Streamlit app + model endpoint
 - [x] **5. Model endpoint** — `predict.py` with stress input, test script.
 - [x] **6. Streamlit app** — CAI Application launcher + Dockerfile for running elsewhere
   from parquet or Impala.
-- [ ] **7. Orchestration + docs** — Airflow DAG, CDE deploy scripts, Hue SQL, README,
+- [x] **7. Orchestration + docs** — Airflow DAG, CDE deploy scripts, Hue SQL, README,
   demo runbook.
 
 ## Method (demo policy, see `config/policy.yaml`)
