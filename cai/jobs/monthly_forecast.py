@@ -38,9 +38,12 @@ from casa.storage import get_storage  # noqa: E402
 
 def main(argv=None) -> None:
     p = argparse.ArgumentParser(description="Month-end CASA behavioural forecast")
-    p.add_argument("--as-of", default=None, help="YYYY-MM-DD; default latest week in gold")
+    # Airflow passes these as job-run environment variables (CASA_AS_OF, CASA_TRIGGERED_BY).
+    p.add_argument("--as-of", default=os.environ.get("CASA_AS_OF") or None,
+                   help="YYYY-MM-DD; default latest week in gold")
     p.add_argument("--backend", default=None, choices=["impala", "parquet"])
-    p.add_argument("--triggered-by", default=os.environ.get("JOB_TRIGGERED_BY", "cai-job"))
+    p.add_argument("--triggered-by",
+                   default=os.environ.get("CASA_TRIGGERED_BY") or os.environ.get("JOB_TRIGGERED_BY", "cai-job"))
     p.add_argument("--naive-model", action="store_true", help="skip TimesFM (smoke test only)")
     p.add_argument("--dry-run", action="store_true", help="compute but do not write")
     args, _ = p.parse_known_args(argv)

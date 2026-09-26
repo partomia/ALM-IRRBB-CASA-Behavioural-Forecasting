@@ -48,11 +48,13 @@ def trigger_cai_job(as_of: str, **_):
     job = Variable.get("CASA_CAI_JOB_ID")
     headers = {"Authorization": f"Bearer {Variable.get('CASA_CAI_API_KEY')}", "Content-Type": "application/json"}
     args = "--triggered-by airflow" + (f" --as-of {as_of}" if as_of else "")
+    # A job run ignores "arguments" (the job's own are used); the environment map is applied.
+    env = {"CASA_TRIGGERED_BY": "airflow", "CASA_AS_OF": as_of or ""}
     url = f"{host}/api/v2/projects/{project}/jobs/{job}/runs"
-    resp = requests.post(url, json={"arguments": args}, headers=headers, timeout=60)
+    resp = requests.post(url, json={"arguments": args, "environment": env}, headers=headers, timeout=60)
     resp.raise_for_status()
     run_id = resp.json()["id"]
-    print(f"Started CAI job run {run_id} with arguments: {args}")
+    print(f"Started CAI job run {run_id} with environment: {env}")
 
     deadline = time.time() + 60 * 60
     while time.time() < deadline:
