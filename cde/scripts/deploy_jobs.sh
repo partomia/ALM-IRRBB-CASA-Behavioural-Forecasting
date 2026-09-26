@@ -10,15 +10,20 @@
 #   cde credential create --name my-github-pat --type basic --username <github-user>
 #   GIT_CREDENTIAL=my-github-pat ./cde/scripts/deploy_jobs.sh
 #
-# No python-env resource: the jobs only use PySpark and the standard library.
+# Resources: the vcluster default (1 core / 1 GB) is very slow for ~2.5M rows,
+# so every job gets a 2-core / 4 GB driver and 1-4 executors of 2 cores / 4 GB.
 
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/partomia/ALM-IRRBB-CASA-Behavioural-Forecasting}"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 REPO_NAME="${REPO_NAME:-rsingh-casa-alb-pipeline}"
+PYTHON_ENV="${PYTHON_ENV:-rsingh-casa-alb-python-env}"
 JOB_PREFIX="${JOB_PREFIX:-rsingh-casa-alb}"
 DB_PREFIX="${DB_PREFIX:-rsingh_casa_alb}"
+REQUIREMENTS="$(cd "$(dirname "$0")/.." && pwd)/resources/requirements.txt"
+RESOURCES=(--driver-cores 2 --driver-memory 4g --executor-cores 2 --executor-memory 4g
+           --min-executors 1 --max-executors 4 --conf spark.sql.shuffle.partitions=48)
 
 echo "==> Repository: ${REPO_NAME}"
 if cde repository describe --name "${REPO_NAME}" &>/dev/null; then
@@ -30,6 +35,18 @@ else
 fi
 cde repository sync --name "${REPO_NAME}"
 
+echo "==> Python environment resource: ${PYTHON_ENV}"
+cde resource create --name "${PYTHON_ENV}" --type python-env 2>/dev/null || true
+cde resource upload --name "${PYTHON_ENV}" --local-path "${REQUIREMENTS}"
+echo "    building (1-3 min); jobs fail fast until it is ready:"
+for _ in $(seq 1 30); do
+  status="$(cde resource describe --name "${PYTHON_ENV}" | python3 -c "import json,sys; print(json.load(sys.stdin).get('status',''))")"
+  echo "    status: ${status}"
+  [[ "${status}" == "ready" ]] && break
+  [[ "${status}" == "failed" ]] && { echo "python-env build failed"; exit 1; }
+  sleep 20
+done
+
 create_job() {
   local name=$1 file=$2
   shift 2
@@ -40,11 +57,12 @@ create_job() {
   cde job create --name "${name}" --type spark \
     --mount-1-resource "${REPO_NAME}" \
     --application-file "${file}" \
+    --python-env-resource-name "${PYTHON_ENV}" \
+    "${RESOURCES[@]}" \
     --arg=--db-prefix --arg="${DB_PREFIX}" "$@"
 }
 
-create_job "${JOB_PREFIX}-generate-cbs-bronze" "cde/jobs/generate_cbs_bronze.py" \
-  --driver-memory 4g --executor-memory 4g --max-executors 4
+create_job "${JOB_PREFIX}-generate-cbs-bronze" "cde/jobs/generate_cbs_bronze.py"
 create_job "${JOB_PREFIX}-validate-bronze"     "cde/jobs/validate_bronze.py"
 create_job "${JOB_PREFIX}-build-silver-daily"  "cde/jobs/build_silver_daily.py"
 create_job "${JOB_PREFIX}-build-gold-weekly"   "cde/jobs/build_gold_weekly.py"
