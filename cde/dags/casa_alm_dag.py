@@ -14,9 +14,9 @@ tables. It needs these Airflow Variables (CDE Airflow UI > Admin > Variables):
 If CASA_CAI_HOST is not set the CAI step is skipped, so the Spark part can be
 tested on its own.
 
-Params (Trigger DAG w/ config): {"as_of": "2026-08-31"}; empty = yesterday.
-Manual trigger for now; set schedule_interval to MONTHLY (06:00 UTC on the
-1st, the month-end ALCO run) and re-run deploy_dag.sh to schedule it.
+Scheduled monthly at 06:00 UTC on the 1st: the run is the ALCO run as of the
+month-end just closed. Manual trigger (Trigger DAG w/ config): {"as_of":
+"2026-08-31"}; empty = yesterday / latest week.
 
 Job names must match cde/scripts/deploy_jobs.sh exactly (CDEJobRunOperator
 fails with 404 "job not found" otherwise).
@@ -34,7 +34,9 @@ from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 
 JOB_PREFIX = "rsingh-casa-alb"
 DB_PREFIX = "rsingh_casa_alb"
-AS_OF = "{{ params.as_of }}"
+# Scheduled runs: month-end of the interval just closed; manual runs: the as_of param.
+AS_OF = ("{{ params.as_of or ((data_interval_end - macros.timedelta(days=1)).strftime('%Y-%m-%d') "
+         "if dag_run.run_type == 'scheduled' else '') }}")
 TERMINAL_OK = {"succeeded"}
 TERMINAL_BAD = {"failed", "stopped", "timedout"}
 MONTHLY = "0 6 1 * *"
@@ -81,8 +83,9 @@ with DAG(
     dag_id="casa_alm_behavioural_pipeline",
     description="CBS extract -> bronze/silver/gold (CDE) -> TimesFM ALCO run (CAI)",
     default_args=default_args,
-    schedule_interval=None,
-    start_date=datetime(2026, 1, 1),
+    schedule_interval=MONTHLY,
+    # the first interval (Sep) closes 1 Oct 06:00; an earlier start would fire a run on deploy
+    start_date=datetime(2026, 9, 1, 6),
     catchup=False,
     is_paused_upon_creation=False,
     params={"as_of": ""},

@@ -26,5 +26,5 @@ fi
 
 echo "==> Creating ${DAG_JOB_NAME}"
 cde job create --name "${DAG_JOB_NAME}" --type airflow --dag-file "${DAG_PATH}" --mount-1-resource "${REPO_NAME}"
-echo "DAG casa_alm_behavioural_pipeline registered (manual trigger):"
+echo "DAG casa_alm_behavioural_pipeline registered (monthly, 06:00 UTC on the 1st). Run now:"
 echo "  cde job run --name ${DAG_JOB_NAME}"
