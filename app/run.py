@@ -10,6 +10,7 @@ Also works from a Session terminal: python app/run.py
 """
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -33,5 +34,8 @@ cmd = [sys.executable, "-m", "streamlit", "run", str(ROOT / "app" / "streamlit_a
        "--server.enableCORS", "false", "--server.enableXsrfProtection", "false",
        "--browser.gatherUsageStats", "false"]
 print(f"[app/run] {' '.join(cmd)}  (cwd={ROOT})", flush=True)
-os.chdir(ROOT)
-os.execvp(cmd[0], cmd)
+# Run Streamlit as a child and block: exec-ing would replace the Jupyter kernel
+# process, which CAI treats as the application dying.
+code = subprocess.call(cmd, cwd=ROOT)
+if code:
+    raise SystemExit(f"streamlit exited with status {code}")
