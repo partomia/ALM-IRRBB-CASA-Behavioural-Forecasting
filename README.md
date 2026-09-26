@@ -182,6 +182,8 @@ stress what-ifs call the model endpoint:
 
 Without these the stress tab runs TimesFM inside the app; give it 8 GB then.
 
+![CASA ALCO app on CAI](docs/images/app-alco-overview.png)
+
 ### 5a. Airflow triggers the CAI Job
 
 Print the IDs in a session:
