@@ -101,6 +101,7 @@ class ImpalaStorage:
     def __init__(self, cfg: dict):
         self.cfg = cfg
         self._conn = None
+        self._ensured: set[str] = set()
 
     def _connect(self):
         if self._conn is None:
@@ -150,11 +151,15 @@ class ImpalaStorage:
         return self.query(sql)
 
     def ensure_table(self, key: str) -> None:
+        if key in self._ensured:
+            return
         full = table(key)
         cols = ", ".join(f"{c} {t}" for c, t in OUTPUT_TABLES[key])
-        self.execute(f"CREATE DATABASE IF NOT EXISTS {full.split('.')[0]}")
+        if not self._ensured:
+            self.execute(f"CREATE DATABASE IF NOT EXISTS {full.split('.')[0]}")
         self.execute(f"CREATE TABLE IF NOT EXISTS {full} ({cols}) PARTITIONED BY SPEC (as_of_date) "
                      f"STORED AS ICEBERG TBLPROPERTIES ('format-version'='2')")
+        self._ensured.add(key)
 
     def replace_as_of(self, key: str, df: pd.DataFrame, as_of: date) -> None:
         cols = OUTPUT_TABLES[key]

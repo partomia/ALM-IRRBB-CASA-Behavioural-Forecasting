@@ -54,9 +54,9 @@ SELECT segment_id, COUNT(*) AS weeks, MAX(week_end_date) AS last_week
 FROM rsingh_casa_alb_gold.casa_weekly_balance FOR SYSTEM_VERSION AS OF 1234567890123456789
 GROUP BY segment_id ORDER BY segment_id;
 
--- or by wall-clock time
+-- or by wall-clock time (must be after the first snapshot's creation_time)
 SELECT segment_id, MAX(week_end_date) AS last_week
-FROM rsingh_casa_alb_gold.casa_weekly_balance FOR SYSTEM_TIME AS OF '2026-09-01 00:00:00'
+FROM rsingh_casa_alb_gold.casa_weekly_balance FOR SYSTEM_TIME AS OF now() - INTERVAL 1 MINUTES
 GROUP BY segment_id ORDER BY segment_id;
 
 -- 7. Forecast band for one segment, latest run
