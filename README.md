@@ -124,6 +124,8 @@ and apps; restart a running session after changing them):
 | `CASA_IMPALA_USER` / `CASA_IMPALA_PASSWORD` | workload user / password (LDAP) |
 | `CASA_IMPALA_HOST` | only if not the VW host in `config/casa.yaml` |
 
+![CAI project environment variables](docs/images/cai-project-env-vars.png)
+
 Session terminal:
 
 ```bash
