@@ -15,7 +15,8 @@ If CASA_CAI_HOST is not set the CAI step is skipped, so the Spark part can be
 tested on its own.
 
 Params (Trigger DAG w/ config): {"as_of": "2026-08-31"}; empty = yesterday.
-Scheduled at 06:00 UTC on the 1st of each month (month-end ALCO run).
+Manual trigger for now; set schedule_interval to MONTHLY (06:00 UTC on the
+1st, the month-end ALCO run) and re-run deploy_dag.sh to schedule it.
 
 Job names must match cde/scripts/deploy_jobs.sh exactly (CDEJobRunOperator
 fails with 404 "job not found" otherwise).
@@ -36,6 +37,7 @@ DB_PREFIX = "rsingh_casa_alb"
 AS_OF = "{{ params.as_of }}"
 TERMINAL_OK = {"succeeded"}
 TERMINAL_BAD = {"failed", "stopped", "timedout"}
+MONTHLY = "0 6 1 * *"
 
 
 def trigger_cai_job(as_of: str, **_):
@@ -77,10 +79,10 @@ with DAG(
     dag_id="casa_alm_behavioural_pipeline",
     description="CBS extract -> bronze/silver/gold (CDE) -> TimesFM ALCO run (CAI)",
     default_args=default_args,
-    schedule_interval="0 6 1 * *",
+    schedule_interval=None,
     start_date=datetime(2026, 1, 1),
     catchup=False,
-    is_paused_upon_creation=True,
+    is_paused_upon_creation=False,
     params={"as_of": ""},
     tags=["casa", "alm", "irrbb", "iceberg"],
 ) as dag:
