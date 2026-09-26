@@ -1,0 +1,49 @@
+# Behavioural assumptions a bank's ALCO would own in its board-approved policy.
+# These are demo values, not a validated regulatory model.
+
+horizon_weeks: 52
+
+backtest:
+  horizon_weeks: 13
+  n_cutoffs: 4           # rolling origins, each 13 weeks apart, ending at the latest week
+  min_history_weeks: 104
+
+# BCBS IRRBB (d368) caps on core non-maturity deposits by category.
+irrbb_caps:
+  retail_transactional:
+    max_core_share: 0.90
+    max_avg_maturity_years: 5.0
+  retail_non_transactional:
+    max_core_share: 0.70
+    max_avg_maturity_years: 4.5
+  wholesale:
+    max_core_share: 0.50
+    max_avg_maturity_years: 4.0
+
+# RBI Structural Liquidity Statement time buckets (days are upper bounds, inclusive).
+sls_buckets:
+  - {code: B01, label: "Day 1",                 max_days: 1}
+  - {code: B02, label: "2-7 days",              max_days: 7}
+  - {code: B03, label: "8-14 days",             max_days: 14}
+  - {code: B04, label: "15-30 days",            max_days: 30}
+  - {code: B05, label: "31 days - 2 months",    max_days: 61}
+  - {code: B06, label: "Over 2 - 3 months",     max_days: 92}
+  - {code: B07, label: "Over 3 - 6 months",     max_days: 183}
+  - {code: B08, label: "Over 6 months - 1 year", max_days: 365}
+  - {code: B09, label: "Over 1 - 3 years",      max_days: 1095}
+  - {code: B10, label: "Over 3 - 5 years",      max_days: 1826}
+  - {code: B11, label: "Over 5 years",          max_days: null}
+
+# Slotting rules:
+#  * Run-off: drop from today's balance to the running minimum of the P10 path,
+#    spread over buckets B01-B08 by the day it happens.
+#  * Cap excess: balance the model calls stable but the IRRBB cap does not allow
+#    as core. Conservatively slotted in Day 1.
+#  * Core: spread over the long buckets using the weights below. Bucket midpoints
+#    (years) are used to check the average maturity against the IRRBB cap.
+cap_excess_bucket: B01
+core_distribution:
+  retail_transactional:     {B09: 0.30, B10: 0.40, B11: 0.30}
+  retail_non_transactional: {B09: 0.40, B10: 0.40, B11: 0.20}
+  wholesale:                {B09: 0.60, B10: 0.40}
+bucket_midpoint_years: {B09: 2.0, B10: 4.0, B11: 6.0}

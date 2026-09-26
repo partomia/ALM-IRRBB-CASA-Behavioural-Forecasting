@@ -1,0 +1,13 @@
+# CAI runtime (Python 3.11): monthly job, model endpoint, Streamlit app
+# CPU-only torch wheels (the default Linux wheel pulls ~2 GB of CUDA libraries)
+--extra-index-url https://download.pytorch.org/whl/cpu
+timesfm[torch]>=3.0,<4
+numpy
+pandas
+pyarrow
+pyyaml
+impyla
+huggingface_hub
+streamlit
+plotly
+requests

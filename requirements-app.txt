@@ -1,0 +1,9 @@
+# Streamlit app only (no torch): Docker / any host that calls the CAI endpoint
+numpy
+pandas
+pyarrow
+pyyaml
+impyla
+streamlit
+plotly
+requests

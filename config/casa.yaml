@@ -1,0 +1,54 @@
+# Single source of truth for names and runtime settings used by the CAI side
+# (monthly job, model endpoint, Streamlit app). The CDE Spark jobs are
+# self-contained: they take the same prefix via `--db-prefix` (default
+# rsingh_casa_alb) and use the same table names.
+#
+# Every key can be overridden with an env var: CASA_<SECTION>_<KEY>,
+# e.g. CASA_STORAGE_BACKEND=parquet, CASA_DATABASES_PREFIX=someone_casa_alb.
+
+databases:
+  prefix: rsingh_casa_alb          # Hive lowercases names; requested as rsingh_CASA_ALB_*
+  bronze: "{prefix}_bronze"
+  silver: "{prefix}_silver"
+  gold: "{prefix}_gold"
+  ref: "{prefix}_ref"
+
+tables:
+  cbs_daily_balance: "{bronze}.cbs_daily_balance"
+  casa_segment_map: "{ref}.casa_segment_map"
+  casa_daily_balance: "{silver}.casa_daily_balance"
+  casa_weekly_balance: "{gold}.casa_weekly_balance"
+  casa_behavioural_split: "{gold}.casa_behavioural_split"
+  casa_forecast_path: "{gold}.casa_forecast_path"
+  casa_sls_buckets: "{gold}.casa_sls_buckets"
+  casa_backtest_metrics: "{gold}.casa_backtest_metrics"
+  casa_model_run: "{gold}.casa_model_run"
+
+storage:
+  # impala  -> Cloudera Data Warehouse (CDW) Impala over HTTPS (CAI job + app on CAI)
+  # parquet -> local folder of parquet files, one per table (laptop / Docker / offline demo)
+  backend: impala
+  parquet_dir: data/parquet
+
+impala:
+  host: ""                          # CASA_IMPALA_HOST, e.g. <cdw-impala-vw-host>
+  port: 443
+  http_path: cliservice
+  use_ssl: true
+  use_http_transport: true
+  auth_mechanism: LDAP              # LDAP (workload user/password) or GSSAPI (kinit)
+  kerberos_service_name: impala
+  user: ""                          # CASA_IMPALA_USER
+  password: ""                      # CASA_IMPALA_PASSWORD (never commit)
+
+model:
+  hf_repo: google/timesfm-2.5-200m-pytorch
+  local_dir: ""                     # set for air-gapped installs (hf download --local-dir)
+  max_context: 1024
+  max_horizon: 256
+  torch_compile: false              # compile speeds up repeated calls but slows cold start
+
+endpoint:
+  url: ""                           # CAI model deployment URL (CASA_ENDPOINT_URL)
+  access_key: ""                    # CASA_ENDPOINT_ACCESS_KEY
+  api_key: ""                       # CASA_ENDPOINT_API_KEY (Bearer token when auth is enabled)
