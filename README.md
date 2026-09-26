@@ -112,37 +112,53 @@ After a code change: `git push`, then `cde repository sync --name rsingh-casa-al
 after idle can wait 20+ minutes for scale-up (`cde run describe --id <id>` shows
 `waiting-for-scale-up`).
 
-### 2. CAI project
+### 2. CAI project and session
 
 New project `alm-casa-timesfm` from this Git repo, Python 3.11 runtime. Project
-environment variables:
+Settings > Advanced > environment variables (inherited by sessions, jobs, models
+and apps; restart a running session after changing them):
 
 | Variable | Value |
 |---|---|
 | `HF_HOME` | `/home/cdsw/.hf_cache` |
-| `CASA_IMPALA_HOST` | CDW Impala virtual warehouse host (from its JDBC URL) |
 | `CASA_IMPALA_USER` / `CASA_IMPALA_PASSWORD` | workload user / password (LDAP) |
-| `CASA_ENDPOINT_URL`, `CASA_ENDPOINT_ACCESS_KEY`, `CASA_ENDPOINT_API_KEY` | after step 4, for the app |
+| `CASA_IMPALA_HOST` | only if not the VW host in `config/casa.yaml` |
 
-In a session: `pip3 install -r requirements.txt`, then smoke test with
-`python cai/jobs/monthly_forecast.py --dry-run`.
+Session terminal:
+
+```bash
+git pull
+pip3 install -r requirements.txt
+python -c "import timesfm, torch; print('ok', torch.__version__, hasattr(timesfm, 'TimesFM_2p5_200M_torch'))"
+
+# reads gold via Impala, downloads TimesFM once (~900 MB), backtest + forecast, writes nothing
+python cai/jobs/monthly_forecast.py --dry-run
+
+# endpoint logic in-process, 10% stress over 8 weeks
+python cai/model/test_endpoint.py --local --segment SA_RETAIL_URBAN --stress-cut 0.10
+```
 
 ### 3. CAI Job
 
-Jobs > New Job: script `cai/jobs/monthly_forecast.py`, arguments empty (latest
-week) or `--as-of 2026-08-31`, 2 vCPU / 8 GB, manual schedule (Airflow triggers
-it). For history: run `cai/jobs/backfill_alco_history.py --months 6` once.
+Jobs > New Job:
 
-For Airflow to trigger it, set Airflow Variables in the CDE Airflow UI:
-`CASA_CAI_HOST` (workbench URL), `CASA_CAI_PROJECT_ID`, `CASA_CAI_JOB_ID`,
-`CASA_CAI_API_KEY` (User settings > API Keys). Without `CASA_CAI_HOST` the DAG
-skips the CAI step.
+- Name `casa-monthly-forecast`, script `cai/jobs/monthly_forecast.py`
+- Arguments empty (Airflow passes `--as-of` and `--triggered-by airflow`)
+- Python 3.11, 2 vCPU / 8 GB, schedule Manual
+
+Run it once (about 3 minutes); it writes a run with `triggered_by = cai-job`.
+For history without Airflow: run `cai/jobs/backfill_alco_history.py --months 6` once.
 
 ### 4. CAI Model Deployment
 
-Model Deployments > New Model: name `casa-behavioural-model`, file
-`cai/model/predict.py`, function `predict`, 2 vCPU / 8 GB, 1 replica,
-authentication on. The build runs `cdsw-build.sh`. Test with:
+Model Deployments > New Model:
+
+- Name `casa-behavioural-model`, file `cai/model/predict.py`, function `predict`
+- Python 3.11, 2 vCPU / 8 GB, 1 replica, authentication on
+- Example input: the output of `python cai/model/test_endpoint.py --print-request`
+
+The build runs `cdsw-build.sh` (CPU-only torch); the first start downloads TimesFM,
+so allow a few extra minutes. Test with the same JSON in the Test tab. Shape:
 
 ```json
 {"horizon_weeks": 52, "stress": {"weeks": 8, "cut": 0.10},
@@ -150,12 +166,42 @@ authentication on. The build runs `cdsw-build.sh`. Test with:
                "weekly_balance_inr_cr": [52 or more weekly values, oldest first]}]}
 ```
 
-`python cai/model/test_endpoint.py --print-request` prints a real one from gold.
-
 ### 5. CAI Application
 
-Applications > New Application: script `app/run.py`, Python 3.11, 2 vCPU / 4 GB
-(8 GB if no endpoint is configured, since scoring then runs TimesFM in the app).
+Applications > New Application: name `CASA ALCO`, subdomain `casa-alco`, script
+`app/run.py`, Python 3.11, 2 vCPU / 4 GB. Application environment variables, so
+stress what-ifs call the model endpoint:
+
+| Variable | Where to find it |
+|---|---|
+| `CASA_ENDPOINT_URL` | model Overview, URL in the sample curl (`https://modelservice.<domain>/model`) |
+| `CASA_ENDPOINT_ACCESS_KEY` | model Settings |
+| `CASA_ENDPOINT_API_KEY` | User Settings > API Keys, Model API key (authentication is on) |
+
+Without these the stress tab runs TimesFM inside the app; give it 8 GB then.
+
+### 5a. Airflow triggers the CAI Job
+
+Print the IDs in a session:
+
+```bash
+python - <<'EOF'
+import os, cmlapi
+c = cmlapi.default_client()
+pid = os.environ["CDSW_PROJECT_ID"]
+print("CASA_CAI_HOST       =", "https://" + os.environ["CDSW_DOMAIN"])
+print("CASA_CAI_PROJECT_ID =", pid)
+for j in c.list_jobs(pid).jobs:
+    print("CASA_CAI_JOB_ID     =", j.id, "(", j.name, ")")
+EOF
+```
+
+Create an API v2 key (User Settings > API Keys), then in the CDE Airflow UI >
+Admin > Variables set `CASA_CAI_HOST`, `CASA_CAI_PROJECT_ID`, `CASA_CAI_JOB_ID`
+and `CASA_CAI_API_KEY`. Without `CASA_CAI_HOST` the DAG skips the CAI step.
+Then trigger the DAG month by month with `{"as_of": "2026-03-31"}` and so on,
+finishing with the latest week (empty `as_of`), so each ALCO run records its own
+gold snapshot.
 
 ### 6. Run anywhere else
 
