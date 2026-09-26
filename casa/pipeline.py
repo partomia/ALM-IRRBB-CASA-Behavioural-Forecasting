@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import logging
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -53,7 +53,7 @@ def run_monthly(storage, model, as_of: date | None = None, triggered_by: str = "
     series, week_ends, category, last_week = load_series(weekly, as_of)
     as_of = as_of or last_week
     run_id = f"{as_of:%Y%m%d}-{uuid.uuid4().hex[:8]}"
-    now = datetime.now().replace(microsecond=0)
+    now = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
     segs = sorted(series)
     logger.info("run %s: %d segments, %d weeks of history, last week %s",
                 run_id, len(segs), max(len(v) for v in series.values()), last_week)
