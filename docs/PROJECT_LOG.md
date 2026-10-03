@@ -114,3 +114,22 @@ were left as they were.
   | Trust (P10 hit) | 96% | 95.6% |
 
   All seven runs on federal match the laptop table above.
+- Airflow: `set_airflow_variables.py` created the four `CASA_CAI_*` Variables;
+  `deploy_dag.sh` registered `rsingh-casa-alb-orchestration` in 9 s, paused
+  (`pausedUponCreation`, no runs). Unpaused at 13:36:51 UTC: Airflow started
+  `scheduled__2026-09-01T06:00:00+00:00` (as of 2026-09-30) at once:
+
+  | Task | Start (UTC) | Time |
+  |---|---|---|
+  | `generate_cbs_bronze` | 13:37:12 | 223 s |
+  | `validate_bronze` | 13:41:09 | 82 s |
+  | `build_silver_daily` | 13:42:44 | 72 s |
+  | `build_gold_weekly` | 13:44:09 | 73 s |
+  | `cai_monthly_forecast` | 13:45:36 | 63 s |
+
+  9 min 46 s in all, success, no retries. The CAI run `pq9yeu33iccmvs8s` got
+  `CASA_AS_OF=2026-09-30`, `CASA_TRIGGERED_BY=airflow` in its environment: 14 s scheduling,
+  35 s running. Impala has the row: run_id `20260930-d87e0be7`, `triggered_by=airflow`, gold
+  snapshot 5017955801739624589 (gold rebuilt, still 4,004 rows), numbers unchanged
+  (₹124,781.88 / ₹96,489.14 cr, 12 of 14, P10 hit 92.9%). Next run created after
+  2026-11-01 06:00 UTC (not observed).

@@ -66,9 +66,9 @@ CDW  Hue reports, time travel     CAI  Streamlit app + model endpoint
   `cde/scripts/set_airflow_variables.py`, `.github/workflows/ci.yml` (`test` +
   `cai-pipeline`), DAG paused on creation with a tolerant CAI poll, federal Impala host,
   CDE sizing overridable, one process per backfill month-end.
-- [ ] **9. Federal, from scratch**: CDE jobs and the chain for one as_of, CAI project and
+- [x] **9. Federal, from scratch**: CDE jobs and the chain for one as_of, CAI project and
   first CPU run, model and app, Data Visualization, history backfill, Airflow Variables,
-  DAG (paused, then unpaused), GitHub -> CAI check.
+  DAG (paused, then unpaused), GitHub -> CAI check. Measured in `docs/PROJECT_LOG.md`.
 
 ## Decisions
 

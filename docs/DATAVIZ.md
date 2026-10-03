@@ -49,3 +49,6 @@ Data API, so it checks Data Visualization's own connection to Impala, not the la
   (Data -> connection -> Edit) when the password changes.
 - The dashboard always shows the latest run, so the monthly DAG refreshes it without a
   rebuild; re-run the build only when the views or visuals change.
+- The connection caches query results for 30 minutes (Data Visualization's default,
+  `CACHE.RETENTION` 1800 s), so a new ALCO run, or a backfill, shows up to 30 minutes later;
+  `--verify` reads through the same cache.
