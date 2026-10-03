@@ -65,7 +65,7 @@ def export_parquet(spark, db_prefix: str, out_dir: Path) -> None:
         pdf = spark.table(f"{db_prefix}_gold.{table}").toPandas()
         path = out_dir / f"{table}.parquet"
         pdf.to_parquet(path, index=False)
-        print(f"exported {len(pdf)} rows -> {path.relative_to(ROOT)}")
+        print(f"exported {len(pdf)} rows -> {path}")
 
 
 def main() -> None:

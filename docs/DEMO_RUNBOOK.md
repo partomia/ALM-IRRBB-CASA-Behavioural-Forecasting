@@ -62,6 +62,21 @@ further modelling, and a bank's model risk and ALCO process set the final
 assumptions. TimesFM is zero-shot: no training, same method every month, easy to
 explain.
 
+## CAI jobs
+
+Created by `ci/setup_cai.py` in the CAI project `rsingh-casa-alb` (federal, CPU only):
+
+| Job | Script | Engine | Timeout |
+|---|---|---|---|
+| `rsingh-casa-alb-sync-code` | `cai/jobs/sync_code.py` | 2 vCPU / 8 GB / 0 GPU | 60 min |
+| `rsingh-casa-alb-monthly-forecast` | `cai/jobs/monthly_forecast.py` | 4 vCPU / 16 GB / 0 GPU | 60 min |
+| `rsingh-casa-alb-backfill-alco-history` | `cai/jobs/backfill_alco_history.py` | 4 vCPU / 16 GB / 0 GPU | 240 min |
+
+A job run ignores arguments: Airflow sets `CASA_AS_OF` and `CASA_TRIGGERED_BY=airflow`,
+GitHub sets `CASA_DRY_RUN=1`, and the backfill reads `CASA_BACKFILL_MONTHS` (default 6).
+After any run, check the as-of row exists in `rsingh_casa_alb_gold.casa_model_run`: a
+killed engine can still be reported as `ENGINE_SUCCEEDED`.
+
 ## If something goes wrong
 
 | Symptom | Fix |

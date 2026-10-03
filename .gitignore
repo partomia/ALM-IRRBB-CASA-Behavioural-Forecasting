@@ -26,6 +26,7 @@ htmlcov/
 
 # Model weights / caches (downloaded at runtime from Hugging Face)
 models/
+artifacts/
 .hf_cache/
 vendor/
 

@@ -9,7 +9,12 @@ Not a validated regulatory model. It covers volume behaviour only.
 
 ## Platform mapping
 
-Same CDP environment as `partomia/insurance-claim-approval`.
+CDP environment **federal** since 3 Oct 2026 (go01 before, left as it was): CDW Impala
+`coordinator-federal-impala-1.dw-federal-cdp-env.dp5i-5vkq.cloudera.site` (443, HTTP
+`cliservice`, LDAP), the shared CDE vcluster (queue 27 vCPU / ~110 GB), CAI workbench
+`federal-cml-ws` (CPU only). Schedule: monthly 06:00 UTC on the 1st. Neighbours on the
+vcluster: Mule 20:30, Spend 21:00, Churn 22:00, Collections 00:30 UTC daily
+(`cde job list`, 3 Oct 2026).
 
 | Layer | Service | What runs there |
 |---|---|---|
@@ -21,7 +26,9 @@ Same CDP environment as `partomia/insurance-claim-approval`.
 | Demo UI | CAI Application (Streamlit) | fan charts, core split, SLS, stress, time travel |
 
 Names: databases `rsingh_casa_alb_{bronze,silver,gold,ref}`, CDE resources
-`rsingh-casa-alb-*`.
+`rsingh-casa-alb-*`, CAI project `rsingh-casa-alb` with jobs
+`rsingh-casa-alb-{sync-code,monthly-forecast,backfill-alco-history}`, model
+`rsingh-casa-alb-model`, application `rsingh-casa-alb-alco` (`ci/cai_jobs.py`).
 
 ## Data flow
 
@@ -54,6 +61,45 @@ CDW  Hue reports, time travel     CAI  Streamlit app + model endpoint
   from parquet or Impala.
 - [x] **7. Orchestration + docs** — Airflow DAG, CDE deploy scripts, Hue SQL, README,
   demo runbook.
+- [x] **8. Scripted Cloudera setup, federal config** (decisions 1-6): `ci/cai_jobs.py`,
+  `ci/setup_cai.py`, `ci/trigger_cai_pipeline.py`, `cai/jobs/sync_code.py`,
+  `cde/scripts/set_airflow_variables.py`, `.github/workflows/ci.yml` (`test` +
+  `cai-pipeline`), DAG paused on creation with a tolerant CAI poll, federal Impala host,
+  CDE sizing overridable, one process per backfill month-end.
+- [ ] **9. Federal, from scratch**: CDE jobs and the chain for one as_of, CAI project and
+  first CPU run, model and app, Data Visualization, history backfill, Airflow Variables,
+  DAG (paused, then unpaused), GitHub -> CAI check.
+
+## Decisions
+
+1. **CAI is set up over the API v2 from the laptop**, as in Churn and Collections.
+   `ci/cai_jobs.py` holds every CAI resource (60-min job timeout, not the UI's 15),
+   `ci/setup_cai.py` creates or adopts them by name and corrects drift (`--dry-run`,
+   `--no-serving` until a run is published, `--sync`, `--dataviz`), and
+   `cde/scripts/set_airflow_variables.py` sets only the four `CASA_CAI_*` Variables
+   through the vcluster's Airflow API. A job run ignores arguments, so Airflow and
+   GitHub pass `CASA_AS_OF`, `CASA_TRIGGERED_BY`, `CASA_DRY_RUN` in the run's environment.
+2. **`rsingh-casa-alb-sync-code` replaces `git pull` in a session, and GitHub checks each
+   push on CAI.** On a push to main, `cai-pipeline` (after `test`) runs sync-code to the
+   pushed commit, then the monthly job with `CASA_DRY_RUN=1`: real TimesFM backtest and
+   forecast, no table written. The monthly DAG publishes. The trigger retries GETs (the
+   federal endpoint drops TLS now and then) and never retries a POST (a second run).
+3. **The DAG registers paused** (`is_paused_upon_creation=True`): an unpaused
+   registration, or unpausing later, runs the latest closed interval at once. Its CAI
+   poll survives a dropped connection (RequestException and 5xx retried, up to 10 polls
+   in a row; 4xx re-raised), since a task retry would start a second CAI run.
+4. **CAI runs on CPU on federal.** GPUs cannot be scheduled from these projects, and more
+   than 4 vCPU / 16 GB sits in `ENGINE_SCHEDULING`. TimesFM 2.5 (200M) already ran on the
+   CPU torch wheels on go01; jobs are 4 vCPU / 16 GB, the model 2 vCPU / 8 GB. Laptop CPU
+   at 4 threads (M3 Pro): model load 4.3 s, backtest + 52-week forecast for 14 segments
+   4.2 s, peak RSS 2.0 GiB.
+5. **CDE jobs are sized for the shared federal queue** (27 vCPU / ~110 GB): 2-core / 4 GB
+   driver and executors, 1 min / 2 initial / 4 max, each overridable in `deploy_jobs.sh`.
+   `cde job run --wait` can return early, so the drill polls `cde run describe`.
+6. **The backfill runs each month-end in its own process** (as Collections, its decision
+   12): a killed CAI engine can be reported as `ENGINE_SUCCEEDED`, so a child that exits
+   non-zero or is killed fails the job by name, and every period is checked in Impala
+   afterwards. Laptop: 7 s per month-end, 43 s for six.
 
 ## Method (demo policy, see `config/policy.yaml`)
 

@@ -30,7 +30,21 @@ EOF
 )"
 fi
 
-run() { cde job run --name "$1" --arg=--db-prefix --arg="${DB_PREFIX}" "${@:2}" --wait; }
+# `cde job run --wait` can return before the run ends on this vcluster: poll the run instead.
+run() {
+  local id st
+  id="$(cde job run --name "$1" --arg=--db-prefix --arg="${DB_PREFIX}" "${@:2}" \
+        | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])")"
+  echo "    $1: run ${id}"
+  while true; do
+    st="$(cde run describe --id "${id}" | python3 -c "import json,sys; print(json.load(sys.stdin).get('status',''))")"
+    case "${st}" in
+      succeeded) echo "    $1: succeeded ($(date '+%H:%M:%S'))"; return 0 ;;
+      failed|killed|stopped|unknown) echo "    $1: ${st}"; exit 1 ;;
+    esac
+    sleep 20
+  done
+}
 
 for as_of in "${dates[@]}"; do
   echo "==================== as of ${as_of} ($(date '+%H:%M:%S'))"

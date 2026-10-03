@@ -6,17 +6,19 @@ Airflow DAG (CDE): month-end CASA behavioural forecasting pipeline.
 
 The CAI step triggers the Cloudera AI job `cai/jobs/monthly_forecast.py` and
 waits for it, so one DAG run goes from core banking extract to the ALCO
-tables. It needs these Airflow Variables (CDE Airflow UI > Admin > Variables):
-  CASA_CAI_HOST        https://ml-xxxx.<env>.cloudera.site  (CAI workbench URL)
-  CASA_CAI_PROJECT_ID  project id (from the project URL or API)
-  CASA_CAI_JOB_ID      id of the monthly forecast job
-  CASA_CAI_API_KEY     CAI API v2 key (User settings > API keys)
+tables. It needs these Airflow Variables, set by
+cde/scripts/set_airflow_variables.py before the DAG is deployed:
+  CASA_CAI_HOST        https://federal-cml.federal.dp5i-5vkq.cloudera.site  (CAI workbench URL)
+  CASA_CAI_PROJECT_ID  project id of rsingh-casa-alb
+  CASA_CAI_JOB_ID      id of the rsingh-casa-alb-monthly-forecast job
+  CASA_CAI_API_KEY     CAI API v2 key (User settings > API keys; not the Model API key)
 If CASA_CAI_HOST is not set the CAI step is skipped, so the Spark part can be
 tested on its own.
 
 Scheduled monthly at 06:00 UTC on the 1st: the run is the ALCO run as of the
-month-end just closed. Manual trigger (Trigger DAG w/ config): {"as_of":
-"2026-08-31"}; empty = yesterday / latest week.
+month-end just closed. Clear of the daily DAGs on the shared vcluster (Mule
+20:30, Spend 21:00, Churn 22:00, Collections 00:30 UTC). Manual trigger
+(Trigger DAG w/ config): {"as_of": "2026-08-31"}; empty = yesterday / latest week.
 
 Job names must match cde/scripts/deploy_jobs.sh exactly (CDEJobRunOperator
 fails with 404 "job not found" otherwise).
@@ -40,6 +42,8 @@ AS_OF = ("{{ params.as_of or ((data_interval_end - macros.timedelta(days=1)).str
 TERMINAL_OK = {"succeeded"}
 TERMINAL_BAD = {"failed", "stopped", "timedout"}
 MONTHLY = "0 6 1 * *"
+CAI_DEADLINE_MIN = 90
+MAX_POLL_ERRORS = 10
 
 
 def trigger_cai_job(as_of: str, **_):
@@ -49,27 +53,40 @@ def trigger_cai_job(as_of: str, **_):
     project = Variable.get("CASA_CAI_PROJECT_ID")
     job = Variable.get("CASA_CAI_JOB_ID")
     headers = {"Authorization": f"Bearer {Variable.get('CASA_CAI_API_KEY')}", "Content-Type": "application/json"}
-    args = "--triggered-by airflow" + (f" --as-of {as_of}" if as_of else "")
     # A job run ignores "arguments" (the job's own are used); the environment map is applied.
     env = {"CASA_TRIGGERED_BY": "airflow", "CASA_AS_OF": as_of or ""}
     url = f"{host}/api/v2/projects/{project}/jobs/{job}/runs"
-    resp = requests.post(url, json={"arguments": args, "environment": env}, headers=headers, timeout=60)
+    resp = requests.post(url, json={"environment": env}, headers=headers, timeout=60)
     resp.raise_for_status()
     run_id = resp.json()["id"]
     print(f"Started CAI job run {run_id} with environment: {env}")
 
-    deadline = time.time() + 60 * 60
+    deadline, poll_errors = time.time() + CAI_DEADLINE_MIN * 60, 0
     while time.time() < deadline:
         time.sleep(30)
-        r = requests.get(f"{url}/{run_id}", headers=headers, timeout=60)
-        r.raise_for_status()
+        # A dropped poll must not fail the task: the run carries on in CAI, and a
+        # task retry would start a second run.
+        try:
+            r = requests.get(f"{url}/{run_id}", headers=headers, timeout=60)
+            if r.status_code >= 500:
+                raise requests.HTTPError(f"HTTP {r.status_code}", response=r)
+            r.raise_for_status()
+        except requests.RequestException as e:
+            if isinstance(e, requests.HTTPError) and e.response is not None and e.response.status_code < 500:
+                raise
+            poll_errors += 1
+            print(f"CAI run {run_id}: poll failed ({poll_errors}/{MAX_POLL_ERRORS}): {e}")
+            if poll_errors >= MAX_POLL_ERRORS:
+                raise AirflowException(f"CAI job run {run_id}: {MAX_POLL_ERRORS} failed polls in a row") from e
+            continue
+        poll_errors = 0
         status = str(r.json().get("status", "")).lower().replace("engine_", "")
         print(f"CAI run {run_id}: {status}")
         if status in TERMINAL_OK:
             return run_id
         if status in TERMINAL_BAD:
             raise AirflowException(f"CAI job run {run_id} ended with status {status}")
-    raise AirflowException(f"CAI job run {run_id} did not finish within 60 minutes")
+    raise AirflowException(f"CAI job run {run_id} did not finish within {CAI_DEADLINE_MIN} minutes")
 
 
 default_args = {
@@ -87,7 +104,9 @@ with DAG(
     # the first interval (Sep) closes 1 Oct 06:00; an earlier start would fire a run on deploy
     start_date=datetime(2026, 9, 1, 6),
     catchup=False,
-    is_paused_upon_creation=False,
+    # Registered paused. Registering unpaused, or unpausing later, runs the latest closed
+    # interval at once.
+    is_paused_upon_creation=True,
     params={"as_of": ""},
     tags=["casa", "alm", "irrbb", "iceberg"],
 ) as dag:

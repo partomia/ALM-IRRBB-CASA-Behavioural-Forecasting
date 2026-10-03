@@ -1,0 +1,79 @@
+name: CI
+
+# Triggers:
+#   - Every push to main
+#   - Every pull request
+#   - Manual trigger from the Actions tab
+#
+# Two jobs:
+#   test          unit tests, the four CDE jobs on local Spark + Iceberg (small
+#                 scale), and the monthly job on parquet with the naive model.
+#   cai-pipeline  needs test, pushes to main only. On Cloudera AI through the CAI
+#                 API v2 (ci/trigger_cai_pipeline.py): sync-code to this commit, then
+#                 rsingh-casa-alb-monthly-forecast as a dry run with TimesFM on CPU
+#                 (backtest, forecast, core split, SLS; no table written). Prints a
+#                 notice and passes until the CAI_URL secret is set.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Unit tests + a small real pipeline run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Java (local Spark / Iceberg needs it)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install dependencies
+        run: pip install -r requirements-ci.txt
+
+      - name: Unit tests
+        run: pytest -q
+
+      # all = generate, validate, silver, gold, export to data/parquet
+      - name: CDE jobs on local Spark + Iceberg (small scale)
+        run: python scripts/run_cde_local.py all --as-of 2026-09-30 --accounts-per-segment 20
+
+      - name: Monthly job (naive model, exercises backtest, split and SLS)
+        run: python cai/jobs/monthly_forecast.py --backend parquet --naive-model --as-of 2026-09-30
+
+  cai-pipeline:
+    name: GitHub -> dry-run forecast on Cloudera AI (CAI API v2)
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    concurrency:            # one chain at a time against the CAI project; a newer push waits
+      group: rsingh-casa-alb-cai
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run the CAI job chain and wait for the dry-run forecast
+        env:
+          CAI_URL: ${{ secrets.CAI_URL }}
+          CAI_API_KEY: ${{ secrets.CAI_API_KEY }}
+          CAI_PROJECT_ID: ${{ secrets.CAI_PROJECT_ID }}
+        run: python ci/trigger_cai_pipeline.py

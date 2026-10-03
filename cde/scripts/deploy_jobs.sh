@@ -11,7 +11,14 @@
 #   GIT_CREDENTIAL=my-github-pat ./cde/scripts/deploy_jobs.sh
 #
 # Resources: the vcluster default (1 core / 1 GB) is very slow for ~2.5M rows,
-# so every job gets a 2-core / 4 GB driver and 1-4 executors of 2 cores / 4 GB.
+# so every job gets a 2-core / 4 GB driver and executors of 2 cores / 4 GB,
+# 1 min / 2 initial / 4 max. The vcluster's YuniKorn queue must fit the driver
+# plus the initial executors up front (PySpark adds 40% memory overhead), or the
+# run is rejected with "queue ... cannot fit application". The federal queue caps
+# at 27 vCPU / ~110 GB, shared by several projects. Every size can be overridden,
+# e.g. INITIAL_EXECUTORS=1 MAX_EXECUTORS=2 ./cde/scripts/deploy_jobs.sh
+#
+# This script does not delete jobs it no longer defines; remove orphans by hand.
 
 set -euo pipefail
 
@@ -22,8 +29,10 @@ PYTHON_ENV="${PYTHON_ENV:-rsingh-casa-alb-python-env}"
 JOB_PREFIX="${JOB_PREFIX:-rsingh-casa-alb}"
 DB_PREFIX="${DB_PREFIX:-rsingh_casa_alb}"
 REQUIREMENTS="$(cd "$(dirname "$0")/.." && pwd)/resources/requirements.txt"
-RESOURCES=(--driver-cores 2 --driver-memory 4g --executor-cores 2 --executor-memory 4g
-           --min-executors 1 --max-executors 4 --conf spark.sql.shuffle.partitions=48)
+RESOURCES=(--driver-cores "${DRIVER_CORES:-2}" --driver-memory "${DRIVER_MEMORY:-4g}"
+           --executor-cores "${EXECUTOR_CORES:-2}" --executor-memory "${EXECUTOR_MEMORY:-4g}"
+           --min-executors "${MIN_EXECUTORS:-1}" --initial-executors "${INITIAL_EXECUTORS:-2}" --max-executors "${MAX_EXECUTORS:-4}"
+           --conf spark.sql.shuffle.partitions=48)
 
 echo "==> Repository: ${REPO_NAME}"
 if cde repository describe --name "${REPO_NAME}" &>/dev/null; then
@@ -46,6 +55,7 @@ for _ in $(seq 1 30); do
   [[ "${status}" == "failed" ]] && { echo "python-env build failed"; exit 1; }
   sleep 20
 done
+[[ "${status}" == "ready" ]] || { echo "python-env not ready after 10 minutes"; exit 1; }
 
 create_job() {
   local name=$1 file=$2
@@ -68,6 +78,8 @@ create_job "${JOB_PREFIX}-build-silver-daily"  "cde/jobs/build_silver_daily.py"
 create_job "${JOB_PREFIX}-build-gold-weekly"   "cde/jobs/build_gold_weekly.py"
 
 echo ""
-echo "Jobs deployed from ${REPO_NAME}. Run one:"
-echo "  cde job run --name ${JOB_PREFIX}-generate-cbs-bronze --wait"
+echo "Jobs deployed from ${REPO_NAME}. Run the chain for one as-of date (--wait can return"
+echo "early on this vcluster: poll 'cde run describe --id <run id>' until it ends):"
+echo "  cde job run --name ${JOB_PREFIX}-generate-cbs-bronze --arg=--db-prefix --arg=${DB_PREFIX} --arg=--as-of --arg=YYYY-MM-DD"
+echo "  ... validate-bronze, build-silver-daily, build-gold-weekly"
 echo "Then register the DAG: ./cde/scripts/deploy_dag.sh"

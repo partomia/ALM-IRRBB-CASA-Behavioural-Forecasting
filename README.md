@@ -97,117 +97,101 @@ CASA_STORAGE_BACKEND=parquet .venv/bin/streamlit run app/streamlit_app.py
 
 ## Deploy on Cloudera
 
-### 1. CDE: Spark jobs and Airflow DAG
+Runs on the **federal** CDP environment since 3 Oct 2026 (go01 before; its resources
+were left as they were). Every resource carries the `rsingh-casa-alb` /
+`rsingh_casa_alb` prefix. Measured timings and IDs: [`docs/PROJECT_LOG.md`](docs/PROJECT_LOG.md).
+
+| What | federal |
+|---|---|
+| CDW Impala | `coordinator-federal-impala-1.dw-federal-cdp-env.dp5i-5vkq.cloudera.site`, 443, HTTP `cliservice`, TLS, LDAP |
+| CDE | shared vcluster; queue caps at 27 vCPU / ~110 GB |
+| CAI | workbench `federal-cml-ws`, CPU only (4 vCPU / 16 GB per engine at most) |
+
+Secrets live in `.env` (gitignored; copy `.env.example`) and are loaded with
+`set -a; source .env; set +a`. Scripts never print them.
+
+### 1. CDE: Spark jobs
 
 CDE CLI configured for the vcluster (`~/.cde/config.yaml`), repo pushed to GitHub.
 
 ```bash
-./cde/scripts/deploy_jobs.sh      # CDE Repository rsingh-casa-alb-pipeline + 4 Spark jobs
-./cde/scripts/deploy_dag.sh       # Airflow job rsingh-casa-alb-orchestration
+./cde/scripts/deploy_jobs.sh      # CDE Repository rsingh-casa-alb-pipeline, python-env, 4 Spark jobs
 ./cde/scripts/backfill_drill.sh   # optional: 6 month-end loads = 6 gold snapshots
 ```
 
+Jobs get a 2-core / 4 GB driver and 2-core / 4 GB executors (1 min / 2 initial / 4 max),
+each overridable (`DRIVER_CORES`, `DRIVER_MEMORY`, `EXECUTOR_CORES`, `EXECUTOR_MEMORY`,
+`MIN_EXECUTORS`, `INITIAL_EXECUTORS`, `MAX_EXECUTORS`): the shared queue rejects a job
+whose driver plus initial executors do not fit ("cannot fit application").
+`cde job run --wait` can return before the run ends; poll `cde run describe --id <id>`.
+
 After a code change: `git push`, then `cde repository sync --name rsingh-casa-alb-pipeline`
 (re-run `deploy_dag.sh` if the DAG changed). On a shared vcluster the first job
-after idle can wait 20+ minutes for scale-up (`cde run describe --id <id>` shows
+after idle can wait for scale-up (`cde run describe --id <id>` shows
 `waiting-for-scale-up`).
 
-### 2. CAI project and session
+### 2. CAI: project, jobs, model, app (scripted)
 
-New project `alm-casa-timesfm` from this Git repo, Python 3.11 runtime. Project
-Settings > Advanced > environment variables (inherited by sessions, jobs, models
-and apps; restart a running session after changing them):
-
-| Variable | Value |
-|---|---|
-| `HF_HOME` | `/home/cdsw/.hf_cache` |
-| `CASA_IMPALA_USER` / `CASA_IMPALA_PASSWORD` | workload user / password (LDAP) |
-| `CASA_IMPALA_HOST` | only if not the VW host in `config/casa.yaml` |
-
-![CAI project environment variables](docs/images/cai-project-env-vars.png)
-
-Session terminal:
+`ci/setup_cai.py` drives the CAI API v2 from the laptop and is idempotent: it finds each
+resource by name, creates what is missing and fixes what drifted, so a re-run after a
+dropped connection converges. The resources are declared in `ci/cai_jobs.py`.
 
 ```bash
-git pull
-pip3 install -r requirements.txt
-python -c "import timesfm, torch; print('ok', torch.__version__, hasattr(timesfm, 'TimesFM_2p5_200M_torch'))"
-
-# reads gold via Impala, downloads TimesFM once (~900 MB), backtest + forecast, writes nothing
-python cai/jobs/monthly_forecast.py --dry-run
-
-# endpoint logic in-process, 10% stress over 8 weeks
-python cai/model/test_endpoint.py --local --segment SA_RETAIL_URBAN --stress-cut 0.10
+set -a; source .env; set +a       # CASA_CAI_HOST, CASA_CAI_API_KEY, CASA_IMPALA_USER/_PASSWORD
+python ci/setup_cai.py --dry-run                 # what would change
+python ci/setup_cai.py --no-serving --sync       # project, env vars, 3 jobs; sync-code installs requirements
+# first ALCO run: start rsingh-casa-alb-monthly-forecast (CAI UI or API) with CASA_AS_OF=YYYY-MM-DD
+CASA_ENDPOINT_API_KEY=$CASA_CAI_API_KEY python ci/setup_cai.py --sync   # + model and app
+python ci/setup_cai.py --dataviz                 # Data Visualization connection + dashboards
 ```
 
-### 3. CAI Job
+| Resource | Name | Engine |
+|---|---|---|
+| Project | `rsingh-casa-alb` (from this repo) | env: `HF_HOME=/home/cdsw/.hf_cache`, `CASA_IMPALA_*`, `CASA_ENDPOINT_*` |
+| Jobs | see [`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md#cai-jobs) | CPU only |
+| Model | `rsingh-casa-alb-model`, `cai/model/predict.py`, function `predict`, auth on | 2 vCPU / 8 GB |
+| Application | `rsingh-casa-alb-alco`, subdomain `rsingh-casa-alb-alco`, `app/run.py` | 2 vCPU / 4 GB |
 
-Jobs > New Job:
+The CAI runtime is CPU only: `requirements.txt` pulls the CPU torch wheels, and TimesFM
+2.5 (~900 MB) downloads from Hugging Face into `HF_HOME` on first use. A job run
+ignores arguments, so everything goes through the run's environment: `CASA_AS_OF`,
+`CASA_TRIGGERED_BY`, `CASA_DRY_RUN=1` (compute, write nothing), `CASA_BACKFILL_MONTHS`.
+The backfill runs each month-end in its own process and fails by name if one dies.
+A killed engine can still be reported as `ENGINE_SUCCEEDED`, so after any run check that
+the as-of row exists in `rsingh_casa_alb_gold.casa_model_run`.
 
-- Name `casa-monthly-forecast`, script `cai/jobs/monthly_forecast.py`
-- Arguments empty (Airflow passes `--as-of` and `--triggered-by airflow`)
-- Python 3.11, 2 vCPU / 8 GB, schedule Manual
-
-Run it once (about 3 minutes); it writes a run with `triggered_by = cai-job`.
-For history without Airflow: run `cai/jobs/backfill_alco_history.py --months 6` once.
-
-### 4. CAI Model Deployment
-
-Model Deployments > New Model:
-
-- Name `casa-behavioural-model`, file `cai/model/predict.py`, function `predict`
-- Python 3.11, 2 vCPU / 8 GB, 1 replica, authentication on
-- Example input: the output of `python cai/model/test_endpoint.py --print-request`
-
-The build runs `cdsw-build.sh` (CPU-only torch); the first start downloads TimesFM,
-so allow a few extra minutes. Test with the same JSON in the Test tab. Shape:
-
-```json
-{"horizon_weeks": 52, "stress": {"weeks": 8, "cut": 0.10},
- "segments": [{"segment_id": "SA_RETAIL_URBAN", "irrbb_category": "retail_transactional",
-               "weekly_balance_inr_cr": [52 or more weekly values, oldest first]}]}
-```
-
-### 5. CAI Application
-
-Applications > New Application: name `CASA ALCO`, subdomain `casa-alco`, script
-`app/run.py`, Python 3.11, 2 vCPU / 4 GB. Application environment variables, so
-stress what-ifs call the model endpoint:
-
-| Variable | Where to find it |
-|---|---|
-| `CASA_ENDPOINT_URL` | model Overview, URL in the sample curl (`https://modelservice.<domain>/model`) |
-| `CASA_ENDPOINT_ACCESS_KEY` | model Settings |
-| `CASA_ENDPOINT_API_KEY` | User Settings > API Keys, Model API key (authentication is on) |
-
-Without these the stress tab runs TimesFM inside the app; give it 8 GB then.
+The app's stress tab calls the model endpoint (`CASA_ENDPOINT_URL`, `_ACCESS_KEY`,
+`_API_KEY` in the project environment); without them it runs TimesFM in the app (give it
+8 GB then).
 
 ![CASA ALCO app on CAI](docs/images/app-alco-overview.png)
 
-### 5a. Airflow triggers the CAI Job
-
-Print the IDs in a session:
+### 3. Airflow: the monthly DAG
 
 ```bash
-python - <<'EOF'
-import os, cmlapi
-c = cmlapi.default_client()
-pid = os.environ["CDSW_PROJECT_ID"]
-print("CASA_CAI_HOST       =", "https://" + os.environ["CDSW_DOMAIN"])
-print("CASA_CAI_PROJECT_ID =", pid)
-for j in c.list_jobs(pid).jobs:
-    print("CASA_CAI_JOB_ID     =", j.id, "(", j.name, ")")
-EOF
+python cde/scripts/set_airflow_variables.py --dry-run
+python cde/scripts/set_airflow_variables.py      # CASA_CAI_HOST, _PROJECT_ID, _JOB_ID, _API_KEY only
+./cde/scripts/deploy_dag.sh                      # rsingh-casa-alb-orchestration, registered paused
+cde job schedule unpause --name rsingh-casa-alb-orchestration
 ```
 
-Create an API v2 key (User Settings > API Keys), then in the CDE Airflow UI >
-Admin > Variables set `CASA_CAI_HOST`, `CASA_CAI_PROJECT_ID`, `CASA_CAI_JOB_ID`
-and `CASA_CAI_API_KEY`. Without `CASA_CAI_HOST` the DAG skips the CAI step.
-Then trigger the DAG month by month with `{"as_of": "2026-03-31"}` and so on,
-finishing with the latest week (empty `as_of`), so each ALCO run records its own
-gold snapshot.
+DAG `casa_alm_behavioural_pipeline`, monthly at 06:00 UTC on the 1st (`0 6 1 * *`), clear
+of the daily DAGs on the shared vcluster. It registers paused: unpausing runs the
+latest closed interval at once (as of the month-end just closed). The CAI step starts
+the monthly job with `CASA_TRIGGERED_BY=airflow` and `CASA_AS_OF`, and waits up to
+90 min; a dropped poll (connection error, 5xx) is retried rather than failing the task,
+since a retry would start a second CAI run. Without `CASA_CAI_HOST` it skips the CAI step.
 
-### 6. Run anywhere else
+### 4. GitHub -> Cloudera AI
+
+`.github/workflows/ci.yml`: `test` (unit tests, the four CDE jobs on local Spark +
+Iceberg at small scale, the monthly job with the naive model), then on a push to main
+`cai-pipeline`: `ci/trigger_cai_pipeline.py` runs `rsingh-casa-alb-sync-code` to the
+pushed commit, then the monthly forecast as a dry run with TimesFM on CAI. Needs the
+repository secrets `CAI_URL`, `CAI_API_KEY`, `CAI_PROJECT_ID`; without them it prints a
+notice and passes.
+
+### 5. Run anywhere else
 
 The app has no Cloudera-only dependency: `docker build -t casa-alm-app .` and run
 it on parquet exports or against CDW Impala; stress what-ifs call the CAI endpoint
@@ -219,13 +203,14 @@ if `CASA_ENDPOINT_URL` is set (see `Dockerfile`).
 casa/          shared logic: config, TimesFM wrapper, core split + SLS, backtest, storage, scoring
 cde/jobs/      Spark jobs (self-contained, PySpark + stdlib only)
 cde/dags/      Airflow DAG
-cde/scripts/   deploy_jobs.sh, deploy_dag.sh, backfill_drill.sh
-cai/jobs/      monthly_forecast.py, backfill_alco_history.py
+cde/scripts/   deploy_jobs.sh, deploy_dag.sh, backfill_drill.sh, set_airflow_variables.py
+cai/jobs/      monthly_forecast.py, backfill_alco_history.py, sync_code.py
 cai/model/     predict.py (endpoint), test_endpoint.py
+ci/            cai_jobs.py (CAI resources), setup_cai.py, trigger_cai_pipeline.py (GitHub -> CAI)
 app/           Streamlit app + CAI launcher
 config/        casa.yaml (names, storage, model), policy.yaml (caps, buckets, slotting)
 sql/           Hue report and time-travel queries
-docs/          demo runbook
+docs/          demo runbook, project log
 scripts/       run_cde_local.py (CDE jobs on a laptop)
 ```
 

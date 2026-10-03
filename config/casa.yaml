@@ -31,7 +31,8 @@ storage:
   parquet_dir: data/parquet
 
 impala:
-  host: coordinator-default-impala-aws.dw-go01-demo-aws.ylcu-atmi.cloudera.site  # CASA_IMPALA_HOST
+  # federal CDW (go01 until 3 Oct 2026: coordinator-default-impala-aws.dw-go01-demo-aws.ylcu-atmi.cloudera.site)
+  host: coordinator-federal-impala-1.dw-federal-cdp-env.dp5i-5vkq.cloudera.site  # CASA_IMPALA_HOST
   port: 443
   http_path: cliservice
   use_ssl: true

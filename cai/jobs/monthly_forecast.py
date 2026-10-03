@@ -6,17 +6,21 @@ Reads <prefix>_gold.casa_weekly_balance, backtests TimesFM, forecasts 52 weeks
 per segment, applies the IRRBB caps and SLS slotting, and writes the gold
 output tables for that as-of date (a rerun replaces the same month only).
 
-CAI Job settings: Script cai/jobs/monthly_forecast.py, Arguments e.g.
-  --as-of 2026-08-31            (default: latest complete week in gold)
-  --backend parquet             (default: storage.backend in config/casa.yaml)
-  --triggered-by airflow
-Env: CASA_IMPALA_HOST / CASA_IMPALA_USER / CASA_IMPALA_PASSWORD, HF_HOME.
+As the CAI job rsingh-casa-alb-monthly-forecast (ci/cai_jobs.py) a run ignores
+arguments, so Airflow and GitHub set the run's environment instead:
+  CASA_AS_OF=2026-08-31         (default: latest complete week in gold)
+  CASA_TRIGGERED_BY=airflow     (github, manual, ...)
+  CASA_DRY_RUN=1                compute everything, write nothing (the GitHub check)
+From a terminal the same as flags: --as-of, --triggered-by, --dry-run, plus
+--backend parquet (default: storage.backend in config/casa.yaml).
+Env: CASA_IMPALA_USER / CASA_IMPALA_PASSWORD (CASA_IMPALA_HOST to override), HF_HOME.
 """
 
 import argparse
 import logging
 import os
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -45,19 +49,24 @@ def main(argv=None) -> None:
     p.add_argument("--triggered-by",
                    default=os.environ.get("CASA_TRIGGERED_BY") or os.environ.get("JOB_TRIGGERED_BY", "cai-job"))
     p.add_argument("--naive-model", action="store_true", help="skip TimesFM (smoke test only)")
-    p.add_argument("--dry-run", action="store_true", help="compute but do not write")
+    p.add_argument("--dry-run", action="store_true", default=os.environ.get("CASA_DRY_RUN", "") == "1",
+                   help="compute but do not write (env CASA_DRY_RUN=1)")
     args, _ = p.parse_known_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     as_of = datetime.strptime(args.as_of, "%Y-%m-%d").date() if args.as_of else None
     storage = get_storage(args.backend)
+    t0 = time.time()
     model = NaiveQuantileModel() if args.naive_model else load_model()
+    t1 = time.time()
     out = run_monthly(storage, model, as_of=as_of, triggered_by=args.triggered_by,
                       model_id="naive-random-walk" if args.naive_model else None, write=not args.dry_run)
 
     run = out["casa_model_run"].iloc[0]
     split = out["casa_behavioural_split"]
-    print(f"\nRun {run.run_id}  as of {run.as_of_date}  storage={storage.name}")
+    print(f"\nRun {run.run_id}  as of {run.as_of_date}  storage={storage.name}  triggered_by={run.triggered_by}"
+          f"{'  DRY RUN: nothing written' if args.dry_run else ''}")
+    print(f"Model load {t1 - t0:.1f} s, pipeline {time.time() - t1:.1f} s")
     if run.backtest_p10_hit_rate is not None:
         print(f"Backtest: actual balance stayed above P10 in {run.backtest_p10_hit_rate:.0%} of segment-weeks, "
               f"inside P10-P90 in {run.backtest_band_coverage:.0%}")

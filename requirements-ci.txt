@@ -1,0 +1,10 @@
+# GitHub Actions: no torch; CI runs the Spark jobs small and the monthly job with the naive model.
+numpy
+pandas
+pyarrow
+pyyaml
+streamlit
+plotly
+requests
+pyspark==4.0.1
+pytest
