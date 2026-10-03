@@ -133,3 +133,11 @@ were left as they were.
   snapshot 5017955801739624589 (gold rebuilt, still 4,004 rows), numbers unchanged
   (₹124,781.88 / ₹96,489.14 cr, 12 of 14, P10 hit 92.9%). Next run created after
   2026-11-01 06:00 UTC (not observed).
+- Data Visualization after the Airflow run: `--verify` 14 of 14 ok, History and trust shows
+  all 7 runs. A verify straight after the run still showed the earlier results: the
+  connection caches results for 30 minutes (`docs/DATAVIZ.md`).
+- GitHub -> CAI: secrets `CAI_URL`, `CAI_API_KEY`, `CAI_PROJECT_ID` set from `.env`. The push
+  of c1ddc4d ran `test` (65 s) and `cai-pipeline` (78 s), both green: sync-code
+  `823jji5tkk19tdli` to c1ddc4df2b2d (18 s scheduling, 3 s running, requirements
+  unchanged), then the monthly job as a dry run, `bjcshu7d50733kau` (13 s scheduling, 24 s
+  running, `triggered_by=github`). No row written: `casa_model_run` still has 7 rows.
