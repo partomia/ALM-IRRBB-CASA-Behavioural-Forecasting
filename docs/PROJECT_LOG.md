@@ -57,3 +57,60 @@ were left as they were.
 
   31 Aug matches go01 to the crore (₹123,446 / ₹95,868 cr, 12 of 14, 96%): the generator
   is prefix-stable, so federal should reproduce these numbers.
+
+### Phase 9: federal deployment (measured)
+
+- `deploy_jobs.sh`: 13:02:53-13:05:47 UTC (2 min 55 s; the python-env was ready after about
+  2.5 min). Jobs have 2-core / 4 GB driver and executors, initial 2, min 1, max 4.
+- CDE chain for as of 2026-09-30, each run polled with `cde run describe`; no queue
+  rejection:
+
+  | Job | Run | Time |
+  |---|---|---|
+  | `rsingh-casa-alb-generate-cbs` | 262 | 223 s |
+  | `rsingh-casa-alb-validate-bronze` | 263 | 86 s |
+  | `rsingh-casa-alb-silver` | 264 | 85 s |
+  | `rsingh-casa-alb-gold` | 265 | 85 s |
+
+  479 s in all. validate_bronze passed: 2,535,343 rows, 2,007 days, 497 duplicate
+  account-days. Impala row counts: bronze `cbs_daily_balance` 2,535,343, ref
+  `casa_segment_map` 14, silver 28,098, gold `casa_weekly_balance` 4,004 (14 segments x
+  286 weeks, 2021-04-09 .. 2026-09-25), the same as the laptop. Gold has one Iceberg
+  snapshot, 2639762512591380740.
+- `ci/setup_cai.py --no-serving --sync`: project `rsingh-casa-alb` (id in `.env` as `CASA_CAI_PROJECT_ID`),
+  jobs `rsingh-casa-alb-sync-code` (`l74p-bnnz-teu2-6ttm`),
+  `rsingh-casa-alb-monthly-forecast` (`1vfh-7l8k-5xwc-6liu`),
+  `rsingh-casa-alb-backfill-alco-history` (`sv33-isyn-xoli-bsg4`). The first sync run
+  installed the requirements: 8.4 min running.
+- First monthly forecast on CAI (as of 2026-09-30, `triggered_by=manual`, 4 vCPU / 16 GB,
+  no GPU): 2.4 min scheduling, 49 s running, including the first TimesFM download from
+  Hugging Face. run_id `20260930-930b419b`, model revision
+  `1d952420fba87f3c6dee4f240de0f1a0fbc790e3`, 286 history weeks. Numbers identical to the
+  laptop: ₹124,781.88 / ₹96,489.14 cr (77.3%), 12 of 14, P10 hit 92.9%, P10-P90 76.9%,
+  MAPE 4.15%. Rows: split 14, path 728, SLS 143, backtest 56, model_run 1.
+- Serving (`ci/setup_cai.py`): model `rsingh-casa-alb-model`
+  (`462339e7-bb83-44a5-aa26-8d3ac4e1038c`), build 13:20:53-13:24:00, deployment 2 vCPU /
+  8 GB, 1 replica, deployed 13:24:42; no CPU-group stall, so the workbench was not resized.
+  Endpoint from the laptop: 2.05 / 1.94 / 1.92 s per call. SA_RETAIL_URBAN base: balance
+  ₹24,540.1 cr, model core 94.5%, core 90.0% (cap binds); stress -10% over 8 weeks: ₹22,086.1
+  cr, model core 89.5%, cap not binding. App `rsingh-casa-alb-alco` (`bqnu-o5km-6kii-kuqv`)
+  running; its URL answers 302 to the CAI login.
+- Data Visualization (`docs/DATAVIZ.md`): views (10 statements), connection
+  `rsingh-casa-alb-impala`, workspace `rsingh-casa-alb`, 5 datasets, 14 visuals, dashboard 219.
+  File build 29.6 s, import 1.9 s, `--verify` 14 of 14 visuals ok in 18 s (total 124,782,
+  core 96,489, 77.3%, 12 binds). The first import landed in Private: the import ignores
+  the file's workspace; sending the form field `workspace=<name>` fixes it.
+- Backfill on CAI, one process per month-end: one period (`CASA_BACKFILL_MONTHS=1`, 31 Aug)
+  29.9 s running after 29 s scheduling; six periods (31 Mar .. 31 Aug) 145 s running, about
+  24 s each. Every as of has 14 split rows, 728 path rows and one model_run row in Impala
+  (`triggered_by=backfill`). Federal against go01, as of 31 Aug 2026:
+
+  | | go01 | federal |
+  |---|---|---|
+  | Total CASA | ₹123,446 cr | ₹123,446.31 cr |
+  | Core | ₹95,868 cr (77.7%) | ₹95,868.41 cr (77.66%) |
+  | Non-core | ₹27,578 cr | ₹27,577.91 cr |
+  | Cap binds | 12 of 14 | 12 of 14 |
+  | Trust (P10 hit) | 96% | 95.6% |
+
+  All seven runs on federal match the laptop table above.

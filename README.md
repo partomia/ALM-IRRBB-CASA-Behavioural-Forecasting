@@ -166,6 +166,11 @@ The app's stress tab calls the model endpoint (`CASA_ENDPOINT_URL`, `_ACCESS_KEY
 
 ![CASA ALCO app on CAI](docs/images/app-alco-overview.png)
 
+The same ALCO pack is also a Cloudera Data Visualization dashboard on CDW,
+**rsingh-casa-alb - CASA ALCO** (4 sheets, 14 visuals over the views in
+`sql/dataviz_views.sql`), built as code by `dataviz/build_dashboard.py`; see
+[`docs/DATAVIZ.md`](docs/DATAVIZ.md).
+
 ### 3. Airflow: the monthly DAG
 
 ```bash
@@ -208,9 +213,10 @@ cai/jobs/      monthly_forecast.py, backfill_alco_history.py, sync_code.py
 cai/model/     predict.py (endpoint), test_endpoint.py
 ci/            cai_jobs.py (CAI resources), setup_cai.py, trigger_cai_pipeline.py (GitHub -> CAI)
 app/           Streamlit app + CAI launcher
+dataviz/       build_dashboard.py + the exported Data Visualization dashboard
 config/        casa.yaml (names, storage, model), policy.yaml (caps, buckets, slotting)
-sql/           Hue report and time-travel queries
-docs/          demo runbook, project log
+sql/           Hue report and time-travel queries, Data Visualization views
+docs/          demo runbook, Data Visualization, project log
 scripts/       run_cde_local.py (CDE jobs on a laptop)
 ```
 

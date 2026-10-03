@@ -1,0 +1,455 @@
+{
+ "segments": [],
+ "staticasset": [],
+ "dashboards": [
+  {
+   "model": "reports.report",
+   "pk": 9200,
+   "fields": {
+    "report_name": "rsingh-casa-alb - CASA ALCO",
+    "report_description": "docs/DATAVIZ.md",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "dashboard",
+    "report_mode": null,
+    "dashboard_url_name": "",
+    "report_data": "{\"report_title\": \"rsingh-casa-alb - CASA ALCO\", \"numColumns\": 64, \"report_subtitle\": \"Month-end CASA behavioural split, SLS slotting and TimesFM forecast (federal CDW)\", \"dashboard_widgets\": [{\"col\": 1, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-1-widget-9401\"}, {\"col\": 17, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-2-widget-9402\"}, {\"col\": 33, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-3-widget-9403\"}, {\"col\": 49, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-4-widget-9404\"}, {\"col\": 1, \"row\": 11, \"size_x\": 32, \"size_y\": 22, \"id\": \"uri-5-widget-9405\"}, {\"col\": 33, \"row\": 11, \"size_x\": 32, \"size_y\": 22, \"id\": \"uri-6-widget-9406\"}, {\"col\": 1, \"row\": 33, \"size_x\": 64, \"size_y\": 26, \"id\": \"uri-7-widget-9407\"}], \"dashboard_sheets\": [{\"sheet_id\": 1, \"order\": 1, \"sheet_handle_title\": \"ALCO overview\", \"behaviors\": {}, \"visual_widgets\": [{\"col\": 1, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-1-widget-9401\"}, {\"col\": 17, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-2-widget-9402\"}, {\"col\": 33, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-3-widget-9403\"}, {\"col\": 49, \"row\": 1, \"size_x\": 16, \"size_y\": 10, \"id\": \"uri-4-widget-9404\"}, {\"col\": 1, \"row\": 11, \"size_x\": 32, \"size_y\": 22, \"id\": \"uri-5-widget-9405\"}, {\"col\": 33, \"row\": 11, \"size_x\": 32, \"size_y\": 22, \"id\": \"uri-6-widget-9406\"}, {\"col\": 1, \"row\": 33, \"size_x\": 64, \"size_y\": 26, \"id\": \"uri-7-widget-9407\"}], \"control_widgets\": []}, {\"sheet_id\": 2, \"order\": 2, \"sheet_handle_title\": \"Structural liquidity\", \"behaviors\": {}, \"visual_widgets\": [{\"col\": 1, \"row\": 1, \"size_x\": 64, \"size_y\": 26, \"id\": \"uri-1-widget-9408\"}, {\"col\": 1, \"row\": 27, \"size_x\": 64, \"size_y\": 26, \"id\": \"uri-2-widget-9409\"}], \"control_widgets\": []}, {\"sheet_id\": 3, \"order\": 3, \"sheet_handle_title\": \"Forecast\", \"behaviors\": {}, \"visual_widgets\": [{\"col\": 1, \"row\": 1, \"size_x\": 64, \"size_y\": 24, \"id\": \"uri-1-widget-9410\"}, {\"col\": 1, \"row\": 25, \"size_x\": 64, \"size_y\": 24, \"id\": \"uri-2-widget-9411\"}], \"control_widgets\": []}, {\"sheet_id\": 4, \"order\": 4, \"sheet_handle_title\": \"History and trust\", \"behaviors\": {}, \"visual_widgets\": [{\"col\": 1, \"row\": 1, \"size_x\": 32, \"size_y\": 24, \"id\": \"uri-1-widget-9412\"}, {\"col\": 33, \"row\": 1, \"size_x\": 32, \"size_y\": 24, \"id\": \"uri-2-widget-9413\"}, {\"col\": 1, \"row\": 25, \"size_x\": 64, \"size_y\": 24, \"id\": \"uri-3-widget-9414\"}], \"control_widgets\": []}], \"user_settings\": {\"dashboard_width\": \"1280\", \"display_filters\": \"true\", \"permit_csv_download_dashboard\": \"true\"}, \"global_control_widgets\": [], \"control_widgets\": [], \"click_behavior\": {}}",
+    "shared_visual_dashboards": "[]",
+    "parent_report": null,
+    "uuid": "83cc95ff-cf63-5666-92a3-43bb94e7a6aa",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": null
+   }
+  }
+ ],
+ "appgroupmembership": [],
+ "reportannotation": [],
+ "events": [],
+ "customcss": [],
+ "reportimage": [],
+ "dateranges": [],
+ "visuals": [
+  {
+   "model": "reports.report",
+   "pk": 9401,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "kpi",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Total CASA (INR crore)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"dimensions_shelf\": [], \"aggregates_shelf\": [{\"custom_expr\": \"round(sum([balance_inr_cr]), 0)\", \"expression_for_trigger\": \"round(sum([balance_inr_cr]), 0)\", \"expr_hasagg\": true, \"col_alias\": \"Total CASA\", \"dataset_colname\": \"Total CASA\", \"dataset_coltype\": \"DOUBLE\"}], \"compare_shelf\": [], \"label_shelf\": [], \"tooltip_shelf\": [], \"x_shelf\": [], \"y_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"kpi\", \"saved_shelf_sources\": {\"round(sum([balance_inr_cr]), 0) as 'sub:Total CASA'\": \"aggregates_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"dimensions_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"aggregates_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"compare_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"kpi\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "91f27e3c-742d-5dc1-be10-96dd6c00fe6d",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9402,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "kpi",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Core (INR crore)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"dimensions_shelf\": [], \"aggregates_shelf\": [{\"custom_expr\": \"round(sum([core_inr_cr]), 0)\", \"expression_for_trigger\": \"round(sum([core_inr_cr]), 0)\", \"expr_hasagg\": true, \"col_alias\": \"Core\", \"dataset_colname\": \"Core\", \"dataset_coltype\": \"DOUBLE\"}], \"compare_shelf\": [], \"label_shelf\": [], \"tooltip_shelf\": [], \"x_shelf\": [], \"y_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"kpi\", \"saved_shelf_sources\": {\"round(sum([core_inr_cr]), 0) as 'sub:Core'\": \"aggregates_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"dimensions_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"aggregates_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"compare_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"kpi\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "d926f6b1-d070-5dd8-8225-9528586e5873",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9403,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "kpi",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Core share (%)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"dimensions_shelf\": [], \"aggregates_shelf\": [{\"custom_expr\": \"round(100 * sum([core_inr_cr]) / sum([balance_inr_cr]), 1)\", \"expression_for_trigger\": \"round(100 * sum([core_inr_cr]) / sum([balance_inr_cr]), 1)\", \"expr_hasagg\": true, \"col_alias\": \"Core %\", \"dataset_colname\": \"Core %\", \"dataset_coltype\": \"DOUBLE\"}], \"compare_shelf\": [], \"label_shelf\": [], \"tooltip_shelf\": [], \"x_shelf\": [], \"y_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"kpi\", \"saved_shelf_sources\": {\"round(100 * sum([core_inr_cr]) / sum([balance_inr_cr]), 1) as 'sub:Core %'\": \"aggregates_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"dimensions_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"aggregates_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"compare_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"kpi\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "eac3a7c8-cbcf-58b0-9e6d-72d627e6a5cf",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9404,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "kpi",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Segments where the BCBS cap binds\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"dimensions_shelf\": [], \"aggregates_shelf\": [{\"custom_expr\": \"sum([cap_binds])\", \"expression_for_trigger\": \"sum([cap_binds])\", \"expr_hasagg\": true, \"col_alias\": \"Cap binds\", \"dataset_colname\": \"Cap binds\", \"dataset_coltype\": \"DOUBLE\"}], \"compare_shelf\": [], \"label_shelf\": [], \"tooltip_shelf\": [], \"x_shelf\": [], \"y_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"kpi\", \"saved_shelf_sources\": {\"sum([cap_binds]) as 'sub:Cap binds'\": \"aggregates_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"dimensions_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"aggregates_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"compare_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"kpi\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "d00ee11c-2891-57a0-8c0c-b326db32b840",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9405,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "trellis-bars",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Core and non-core by IRRBB category (INR crore)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"irrbb_category\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[irrbb_category]\", \"col_alias\": \"IRRBB category\"}], \"y_shelf\": [{\"custom_expr\": \"sum([core_inr_cr])\", \"expression_for_trigger\": \"sum([core_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Core\", \"dataset_colname\": \"Core\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"sum([non_core_inr_cr])\", \"expression_for_trigger\": \"sum([non_core_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Non-core\", \"dataset_colname\": \"Non-core\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [], \"tooltip_shelf\": [], \"drill_shelf\": [], \"label_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"trellis-bars\", \"saved_shelf_sources\": {\"[irrbb_category] as 'sub:IRRBB category'\": \"x_shelf\", \"sum([core_inr_cr]) as 'sub:Core'\": \"y_shelf\", \"sum([non_core_inr_cr]) as 'sub:Non-core'\": \"y_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"drill_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-bars\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "e8cb97f0-e876-5a2c-b582-275f7229de37",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9406,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "trellis-bars",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Model core share against the cap, by segment\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"segment_id\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[segment_id]\", \"col_alias\": \"Segment\"}], \"y_shelf\": [{\"custom_expr\": \"max([core_share_model])\", \"expression_for_trigger\": \"max([core_share_model])\", \"expr_hasagg\": true, \"col_alias\": \"Model core share\", \"dataset_colname\": \"Model core share\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"max([core_cap])\", \"expression_for_trigger\": \"max([core_cap])\", \"expr_hasagg\": true, \"col_alias\": \"BCBS cap\", \"dataset_colname\": \"BCBS cap\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [], \"tooltip_shelf\": [], \"drill_shelf\": [], \"label_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"trellis-bars\", \"saved_shelf_sources\": {\"[segment_id] as 'sub:Segment'\": \"x_shelf\", \"max([core_share_model]) as 'sub:Model core share'\": \"y_shelf\", \"max([core_cap]) as 'sub:BCBS cap'\": \"y_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"drill_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-bars\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "2fba7f81-fb4a-5c5a-a3de-766bb5bd5557",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9407,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / ALCO overview",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "table",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Core split by segment (latest ALCO run)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"dimensions_shelf\": [{\"dataset_colname\": \"segment_id\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[segment_id]\", \"col_alias\": \"Segment\", \"order\": {\"priority\": 1, \"ascending\": true}}, {\"dataset_colname\": \"irrbb_category\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[irrbb_category]\", \"col_alias\": \"IRRBB category\"}, {\"dataset_colname\": \"cap_binds\", \"dataset_coltype\": \"INT\", \"expression_for_trigger\": \"[cap_binds]\", \"col_alias\": \"Cap binds\"}], \"aggregates_shelf\": [{\"custom_expr\": \"round(sum([balance_inr_cr]), 1)\", \"expression_for_trigger\": \"round(sum([balance_inr_cr]), 1)\", \"expr_hasagg\": true, \"col_alias\": \"Balance (cr)\", \"dataset_colname\": \"Balance (cr)\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"round(max([core_share_model]), 4)\", \"expression_for_trigger\": \"round(max([core_share_model]), 4)\", \"expr_hasagg\": true, \"col_alias\": \"Model core share\", \"dataset_colname\": \"Model core share\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"round(max([core_share]), 4)\", \"expression_for_trigger\": \"round(max([core_share]), 4)\", \"expr_hasagg\": true, \"col_alias\": \"Core share\", \"dataset_colname\": \"Core share\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"round(sum([core_inr_cr]), 1)\", \"expression_for_trigger\": \"round(sum([core_inr_cr]), 1)\", \"expr_hasagg\": true, \"col_alias\": \"Core (cr)\", \"dataset_colname\": \"Core (cr)\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"round(sum([non_core_inr_cr]), 1)\", \"expression_for_trigger\": \"round(sum([non_core_inr_cr]), 1)\", \"expr_hasagg\": true, \"col_alias\": \"Non-core (cr)\", \"dataset_colname\": \"Non-core (cr)\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"round(max([backtest_p10_hit_rate]), 3)\", \"expression_for_trigger\": \"round(max([backtest_p10_hit_rate]), 3)\", \"expr_hasagg\": true, \"col_alias\": \"Backtest P10 hit\", \"dataset_colname\": \"Backtest P10 hit\", \"dataset_coltype\": \"DOUBLE\"}], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"table\", \"saved_shelf_sources\": {\"[segment_id] as 'sub:Segment'\": \"dimensions_shelf\", \"[irrbb_category] as 'sub:IRRBB category'\": \"dimensions_shelf\", \"[cap_binds] as 'sub:Cap binds'\": \"dimensions_shelf\", \"round(sum([balance_inr_cr]), 1) as 'sub:Balance (cr)'\": \"aggregates_shelf\", \"round(max([core_share_model]), 4) as 'sub:Model core share'\": \"aggregates_shelf\", \"round(max([core_share]), 4) as 'sub:Core share'\": \"aggregates_shelf\", \"round(sum([core_inr_cr]), 1) as 'sub:Core (cr)'\": \"aggregates_shelf\", \"round(sum([non_core_inr_cr]), 1) as 'sub:Non-core (cr)'\": \"aggregates_shelf\", \"round(max([backtest_p10_hit_rate]), 3) as 'sub:Backtest P10 hit'\": \"aggregates_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"dimensions_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"aggregates_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"table\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "80f0e8e5-347d-5d41-8b06-e444bb9320b7",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9408,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / Structural liquidity",
+    "dataset": 9301,
+    "workspace": 4,
+    "report_type": "trellis-bars",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"RBI SLS buckets by component (INR crore, latest run)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"bucket\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[bucket]\", \"col_alias\": \"Bucket\", \"order\": {\"priority\": 1, \"ascending\": true}}], \"y_shelf\": [{\"custom_expr\": \"sum([amount_inr_cr])\", \"expression_for_trigger\": \"sum([amount_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Amount (cr)\", \"dataset_colname\": \"Amount (cr)\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [{\"dataset_colname\": \"component\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[component]\", \"col_alias\": \"Component\"}], \"tooltip_shelf\": [], \"drill_shelf\": [], \"label_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"trellis-bars\", \"saved_shelf_sources\": {\"[bucket] as 'sub:Bucket'\": \"x_shelf\", \"sum([amount_inr_cr]) as 'sub:Amount (cr)'\": \"y_shelf\", \"[component] as 'sub:Component'\": \"color_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"drill_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-bars\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "9a5749f1-99ea-5eb1-904c-8f6cff032d52",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9409,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / Structural liquidity",
+    "dataset": 9301,
+    "workspace": 4,
+    "report_type": "trellis-bars",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"SLS buckets by IRRBB category (INR crore, latest run)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"bucket\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[bucket]\", \"col_alias\": \"Bucket\", \"order\": {\"priority\": 1, \"ascending\": true}}], \"y_shelf\": [{\"custom_expr\": \"sum([amount_inr_cr])\", \"expression_for_trigger\": \"sum([amount_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Amount (cr)\", \"dataset_colname\": \"Amount (cr)\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [{\"dataset_colname\": \"irrbb_category\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[irrbb_category]\", \"col_alias\": \"IRRBB category\"}], \"tooltip_shelf\": [], \"drill_shelf\": [], \"label_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"trellis-bars\", \"saved_shelf_sources\": {\"[bucket] as 'sub:Bucket'\": \"x_shelf\", \"sum([amount_inr_cr]) as 'sub:Amount (cr)'\": \"y_shelf\", \"[irrbb_category] as 'sub:IRRBB category'\": \"color_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"drill_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-bars\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "3eb09305-8cc6-51ce-9883-5b30db803c40",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9410,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / Forecast",
+    "dataset": 9303,
+    "workspace": 4,
+    "report_type": "trellis-lines",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Total CASA, 52-week forecast band (INR crore, latest run)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"week_end_date\", \"dataset_coltype\": \"DATE\", \"expression_for_trigger\": \"[week_end_date]\", \"col_alias\": \"Week\"}], \"y_shelf\": [{\"custom_expr\": \"sum([p10])\", \"expression_for_trigger\": \"sum([p10])\", \"expr_hasagg\": true, \"col_alias\": \"P10\", \"dataset_colname\": \"P10\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"sum([p50])\", \"expression_for_trigger\": \"sum([p50])\", \"expr_hasagg\": true, \"col_alias\": \"P50\", \"dataset_colname\": \"P50\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"sum([p90])\", \"expression_for_trigger\": \"sum([p90])\", \"expr_hasagg\": true, \"col_alias\": \"P90\", \"dataset_colname\": \"P90\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [], \"tooltip_shelf\": [], \"filters_shelf\": [{\"custom_expr\": \"[is_latest] = 1\", \"expression_for_trigger\": \"[is_latest] = 1\", \"filter_input\": {}, \"filter_data\": [], \"dataset_colname\": \"\", \"dataset_coltype\": \"STRING\", \"filter_column\": \"\"}], \"core\": {\"viz_type\": \"trellis-lines\", \"saved_shelf_sources\": {\"[week_end_date] as 'sub:Week'\": \"x_shelf\", \"sum([p10]) as 'sub:P10'\": \"y_shelf\", \"sum([p50]) as 'sub:P50'\": \"y_shelf\", \"sum([p90]) as 'sub:P90'\": \"y_shelf\", \"[is_latest] = 1\": \"filters_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-lines\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "27f50826-785e-5d44-b1d2-2856193d9445",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9411,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / Forecast",
+    "dataset": 9304,
+    "workspace": 4,
+    "report_type": "trellis-lines",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Weekly CASA balance by IRRBB category (INR crore)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"week_end_date\", \"dataset_coltype\": \"DATE\", \"expression_for_trigger\": \"[week_end_date]\", \"col_alias\": \"Week\"}], \"y_shelf\": [{\"custom_expr\": \"sum([balance_inr_cr])\", \"expression_for_trigger\": \"sum([balance_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Balance (cr)\", \"dataset_colname\": \"Balance (cr)\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [{\"dataset_colname\": \"irrbb_category\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[irrbb_category]\", \"col_alias\": \"IRRBB category\"}], \"tooltip_shelf\": [], \"filters_shelf\": [], \"core\": {\"viz_type\": \"trellis-lines\", \"saved_shelf_sources\": {\"[week_end_date] as 'sub:Week'\": \"x_shelf\", \"sum([balance_inr_cr]) as 'sub:Balance (cr)'\": \"y_shelf\", \"[irrbb_category] as 'sub:IRRBB category'\": \"color_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-lines\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "448b4e92-7cbf-5a03-b9f0-06cbc56ebd5e",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9412,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / History and trust",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "trellis-lines",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Core share by ALCO run and segment\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"as_of_date\", \"dataset_coltype\": \"DATE\", \"expression_for_trigger\": \"[as_of_date]\", \"col_alias\": \"As of\"}], \"y_shelf\": [{\"custom_expr\": \"sum([core_inr_cr]) / sum([balance_inr_cr])\", \"expression_for_trigger\": \"sum([core_inr_cr]) / sum([balance_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Core share\", \"dataset_colname\": \"Core share\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [{\"dataset_colname\": \"segment_id\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[segment_id]\", \"col_alias\": \"Segment\"}], \"tooltip_shelf\": [], \"filters_shelf\": [], \"core\": {\"viz_type\": \"trellis-lines\", \"saved_shelf_sources\": {\"[as_of_date] as 'sub:As of'\": \"x_shelf\", \"sum([core_inr_cr]) / sum([balance_inr_cr]) as 'sub:Core share'\": \"y_shelf\", \"[segment_id] as 'sub:Segment'\": \"color_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-lines\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "1a5ade08-2990-596a-8375-a1b1262e75f5",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9413,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / History and trust",
+    "dataset": 9300,
+    "workspace": 4,
+    "report_type": "trellis-bars",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"Core and non-core by ALCO run (INR crore)\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"x_shelf\": [{\"dataset_colname\": \"as_of_date\", \"dataset_coltype\": \"DATE\", \"expression_for_trigger\": \"[as_of_date]\", \"col_alias\": \"As of\"}], \"y_shelf\": [{\"custom_expr\": \"sum([core_inr_cr])\", \"expression_for_trigger\": \"sum([core_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Core\", \"dataset_colname\": \"Core\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"sum([non_core_inr_cr])\", \"expression_for_trigger\": \"sum([non_core_inr_cr])\", \"expr_hasagg\": true, \"col_alias\": \"Non-core\", \"dataset_colname\": \"Non-core\", \"dataset_coltype\": \"DOUBLE\"}], \"color_shelf\": [], \"tooltip_shelf\": [], \"drill_shelf\": [], \"label_shelf\": [], \"filters_shelf\": [], \"core\": {\"viz_type\": \"trellis-bars\", \"saved_shelf_sources\": {\"[as_of_date] as 'sub:As of'\": \"x_shelf\", \"sum([core_inr_cr]) as 'sub:Core'\": \"y_shelf\", \"sum([non_core_inr_cr]) as 'sub:Non-core'\": \"y_shelf\"}, \"shelves\": [{\"name\": \"x_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"y_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"color_shelf\", \"shelf_type\": 1, \"column_type\": 3}, {\"name\": \"tooltip_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"drill_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"label_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"trellis-bars\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "ff10339b-1750-5e33-860b-0460ebb70e0c",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  },
+  {
+   "model": "reports.report",
+   "pk": 9414,
+   "fields": {
+    "report_name": "",
+    "report_description": "rsingh-casa-alb - CASA ALCO / History and trust",
+    "dataset": 9302,
+    "workspace": 4,
+    "report_type": "table",
+    "report_mode": "",
+    "dashboard_url_name": "",
+    "report_data": "{\"report_data\": {\"report_title\": \"ALCO runs: trust numbers and lineage\", \"report_subtitle\": \"\", \"dashboard_id\": 9200, \"limit\": 1000, \"sample_pct\": \"Off\", \"selected_segments\": [], \"report_derived_data\": [], \"click_behaviors\": {}, \"sort_orders_asc\": {}, \"user_settings\": {}, \"dimensions_shelf\": [{\"dataset_colname\": \"as_of_date\", \"dataset_coltype\": \"DATE\", \"expression_for_trigger\": \"[as_of_date]\", \"col_alias\": \"As of\", \"order\": {\"priority\": 1, \"ascending\": false}}, {\"dataset_colname\": \"triggered_by\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[triggered_by]\", \"col_alias\": \"Triggered by\"}, {\"dataset_colname\": \"run_id\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[run_id]\", \"col_alias\": \"Run\"}, {\"dataset_colname\": \"model_revision\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[model_revision]\", \"col_alias\": \"Model revision\"}, {\"dataset_colname\": \"source_snapshot_id\", \"dataset_coltype\": \"STRING\", \"expression_for_trigger\": \"[source_snapshot_id]\", \"col_alias\": \"Gold snapshot\"}], \"aggregates_shelf\": [{\"custom_expr\": \"max([backtest_p10_hit_rate])\", \"expression_for_trigger\": \"max([backtest_p10_hit_rate])\", \"expr_hasagg\": true, \"col_alias\": \"Above P10\", \"dataset_colname\": \"Above P10\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"max([backtest_band_coverage])\", \"expression_for_trigger\": \"max([backtest_band_coverage])\", \"expr_hasagg\": true, \"col_alias\": \"Inside P10-P90\", \"dataset_colname\": \"Inside P10-P90\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"max([backtest_mape_p50])\", \"expression_for_trigger\": \"max([backtest_mape_p50])\", \"expr_hasagg\": true, \"col_alias\": \"MAPE P50\", \"dataset_colname\": \"MAPE P50\", \"dataset_coltype\": \"DOUBLE\"}, {\"custom_expr\": \"max([history_weeks])\", \"expression_for_trigger\": \"max([history_weeks])\", \"expr_hasagg\": true, \"col_alias\": \"History weeks\", \"dataset_colname\": \"History weeks\", \"dataset_coltype\": \"DOUBLE\"}], \"filters_shelf\": [], \"core\": {\"viz_type\": \"table\", \"saved_shelf_sources\": {\"[as_of_date] as 'sub:As of'\": \"dimensions_shelf\", \"[triggered_by] as 'sub:Triggered by'\": \"dimensions_shelf\", \"[run_id] as 'sub:Run'\": \"dimensions_shelf\", \"[model_revision] as 'sub:Model revision'\": \"dimensions_shelf\", \"[source_snapshot_id] as 'sub:Gold snapshot'\": \"dimensions_shelf\", \"max([backtest_p10_hit_rate]) as 'sub:Above P10'\": \"aggregates_shelf\", \"max([backtest_band_coverage]) as 'sub:Inside P10-P90'\": \"aggregates_shelf\", \"max([backtest_mape_p50]) as 'sub:MAPE P50'\": \"aggregates_shelf\", \"max([history_weeks]) as 'sub:History weeks'\": \"aggregates_shelf\"}, \"shelves\": [{\"name\": \"dimensions_shelf\", \"shelf_type\": 1, \"column_type\": 1}, {\"name\": \"aggregates_shelf\", \"shelf_type\": 1, \"column_type\": 2}, {\"name\": \"filters_shelf\", \"shelf_type\": 2, \"column_type\": 3}]}}, \"report_type\": \"table\"}",
+    "shared_visual_dashboards": null,
+    "parent_report": null,
+    "uuid": "2b4ca90d-9767-5851-97b4-6e3242fa8a69",
+    "imported_uuid": null,
+    "has_css_styles": false,
+    "report_search_text": ""
+   }
+  }
+ ],
+ "colorpalette": [],
+ "appgroups": [],
+ "datasets": [
+  {
+   "model": "datasets.dataset",
+   "pk": 9300,
+   "fields": {
+    "dataconnection": 4,
+    "dataset_name": "rsingh-casa-alb - Core split",
+    "dataset_type": "singletable",
+    "dataset_detail": "rsingh_casa_alb_gold.v_alco_split",
+    "dataset_description": "rsingh_casa_alb_gold.v_alco_split (sql/dataviz_views.sql)",
+    "dataset_info": "[{\"tablename\": \"rsingh_casa_alb_gold.v_alco_split\", \"columns\": [{\"alias\": \"as_of_date\", \"type\": \"DATE\", \"name\": \"as_of_date\", \"isdim\": true}, {\"alias\": \"run_id\", \"type\": \"STRING\", \"name\": \"run_id\", \"isdim\": true}, {\"alias\": \"segment_id\", \"type\": \"STRING\", \"name\": \"segment_id\", \"isdim\": true}, {\"alias\": \"irrbb_category\", \"type\": \"STRING\", \"name\": \"irrbb_category\", \"isdim\": true}, {\"alias\": \"balance_inr_cr\", \"type\": \"DOUBLE\", \"name\": \"balance_inr_cr\", \"isdim\": false}, {\"alias\": \"min_p10_inr_cr\", \"type\": \"DOUBLE\", \"name\": \"min_p10_inr_cr\", \"isdim\": false}, {\"alias\": \"core_share_model\", \"type\": \"DOUBLE\", \"name\": \"core_share_model\", \"isdim\": false}, {\"alias\": \"core_cap\", \"type\": \"DOUBLE\", \"name\": \"core_cap\", \"isdim\": false}, {\"alias\": \"core_share\", \"type\": \"DOUBLE\", \"name\": \"core_share\", \"isdim\": false}, {\"alias\": \"cap_binds\", \"type\": \"INT\", \"name\": \"cap_binds\", \"isdim\": true}, {\"alias\": \"core_inr_cr\", \"type\": \"DOUBLE\", \"name\": \"core_inr_cr\", \"isdim\": false}, {\"alias\": \"non_core_inr_cr\", \"type\": \"DOUBLE\", \"name\": \"non_core_inr_cr\", \"isdim\": false}, {\"alias\": \"core_avg_maturity_years\", \"type\": \"DOUBLE\", \"name\": \"core_avg_maturity_years\", \"isdim\": false}, {\"alias\": \"backtest_p10_hit_rate\", \"type\": \"DOUBLE\", \"name\": \"backtest_p10_hit_rate\", \"isdim\": false}, {\"alias\": \"is_latest\", \"type\": \"TINYINT\", \"name\": \"is_latest\", \"isdim\": true}]}]",
+    "dataset_tablenames": "[\"rsingh_casa_alb_gold.v_alco_split\"]",
+    "uuid": "8e46ef15-7ed9-55a6-9f8c-ebe0cc2965b3",
+    "imported_uuid": null,
+    "cache_sequence": 0,
+    "dataset_settings": "{}",
+    "search_enabled": false,
+    "dashboards": [
+     9200
+    ],
+    "version_id": 9300,
+    "version_group_id": 9300,
+    "is_active_version": true,
+    "version_name": "casa-alco",
+    "is_named_version": false
+   }
+  },
+  {
+   "model": "datasets.dataset",
+   "pk": 9301,
+   "fields": {
+    "dataconnection": 4,
+    "dataset_name": "rsingh-casa-alb - SLS buckets",
+    "dataset_type": "singletable",
+    "dataset_detail": "rsingh_casa_alb_gold.v_sls",
+    "dataset_description": "rsingh_casa_alb_gold.v_sls (sql/dataviz_views.sql)",
+    "dataset_info": "[{\"tablename\": \"rsingh_casa_alb_gold.v_sls\", \"columns\": [{\"alias\": \"as_of_date\", \"type\": \"DATE\", \"name\": \"as_of_date\", \"isdim\": true}, {\"alias\": \"segment_id\", \"type\": \"STRING\", \"name\": \"segment_id\", \"isdim\": true}, {\"alias\": \"irrbb_category\", \"type\": \"STRING\", \"name\": \"irrbb_category\", \"isdim\": true}, {\"alias\": \"bucket_order\", \"type\": \"INT\", \"name\": \"bucket_order\", \"isdim\": true}, {\"alias\": \"bucket\", \"type\": \"STRING\", \"name\": \"bucket\", \"isdim\": true}, {\"alias\": \"component\", \"type\": \"STRING\", \"name\": \"component\", \"isdim\": true}, {\"alias\": \"amount_inr_cr\", \"type\": \"DOUBLE\", \"name\": \"amount_inr_cr\", \"isdim\": false}, {\"alias\": \"is_latest\", \"type\": \"TINYINT\", \"name\": \"is_latest\", \"isdim\": true}]}]",
+    "dataset_tablenames": "[\"rsingh_casa_alb_gold.v_sls\"]",
+    "uuid": "212e28b4-4d35-5518-8a04-e31b906ffebb",
+    "imported_uuid": null,
+    "cache_sequence": 0,
+    "dataset_settings": "{}",
+    "search_enabled": false,
+    "dashboards": [
+     9200
+    ],
+    "version_id": 9301,
+    "version_group_id": 9301,
+    "is_active_version": true,
+    "version_name": "casa-alco",
+    "is_named_version": false
+   }
+  },
+  {
+   "model": "datasets.dataset",
+   "pk": 9302,
+   "fields": {
+    "dataconnection": 4,
+    "dataset_name": "rsingh-casa-alb - ALCO runs",
+    "dataset_type": "singletable",
+    "dataset_detail": "rsingh_casa_alb_gold.v_model_run",
+    "dataset_description": "rsingh_casa_alb_gold.v_model_run (sql/dataviz_views.sql)",
+    "dataset_info": "[{\"tablename\": \"rsingh_casa_alb_gold.v_model_run\", \"columns\": [{\"alias\": \"as_of_date\", \"type\": \"DATE\", \"name\": \"as_of_date\", \"isdim\": true}, {\"alias\": \"run_id\", \"type\": \"STRING\", \"name\": \"run_id\", \"isdim\": true}, {\"alias\": \"run_ts\", \"type\": \"TIMESTAMP\", \"name\": \"run_ts\", \"isdim\": true}, {\"alias\": \"model_id\", \"type\": \"STRING\", \"name\": \"model_id\", \"isdim\": true}, {\"alias\": \"model_revision\", \"type\": \"STRING\", \"name\": \"model_revision\", \"isdim\": true}, {\"alias\": \"history_weeks\", \"type\": \"INT\", \"name\": \"history_weeks\", \"isdim\": true}, {\"alias\": \"last_week_end\", \"type\": \"DATE\", \"name\": \"last_week_end\", \"isdim\": true}, {\"alias\": \"source_snapshot_id\", \"type\": \"STRING\", \"name\": \"source_snapshot_id\", \"isdim\": true}, {\"alias\": \"backtest_p10_hit_rate\", \"type\": \"DOUBLE\", \"name\": \"backtest_p10_hit_rate\", \"isdim\": false}, {\"alias\": \"backtest_band_coverage\", \"type\": \"DOUBLE\", \"name\": \"backtest_band_coverage\", \"isdim\": false}, {\"alias\": \"backtest_mape_p50\", \"type\": \"DOUBLE\", \"name\": \"backtest_mape_p50\", \"isdim\": false}, {\"alias\": \"triggered_by\", \"type\": \"STRING\", \"name\": \"triggered_by\", \"isdim\": true}, {\"alias\": \"is_latest\", \"type\": \"TINYINT\", \"name\": \"is_latest\", \"isdim\": true}]}]",
+    "dataset_tablenames": "[\"rsingh_casa_alb_gold.v_model_run\"]",
+    "uuid": "cc8cecaf-246d-52ba-9689-3e616663bcc9",
+    "imported_uuid": null,
+    "cache_sequence": 0,
+    "dataset_settings": "{}",
+    "search_enabled": false,
+    "dashboards": [
+     9200
+    ],
+    "version_id": 9302,
+    "version_group_id": 9302,
+    "is_active_version": true,
+    "version_name": "casa-alco",
+    "is_named_version": false
+   }
+  },
+  {
+   "model": "datasets.dataset",
+   "pk": 9303,
+   "fields": {
+    "dataconnection": 4,
+    "dataset_name": "rsingh-casa-alb - Forecast path",
+    "dataset_type": "singletable",
+    "dataset_detail": "rsingh_casa_alb_gold.v_forecast_path",
+    "dataset_description": "rsingh_casa_alb_gold.v_forecast_path (sql/dataviz_views.sql)",
+    "dataset_info": "[{\"tablename\": \"rsingh_casa_alb_gold.v_forecast_path\", \"columns\": [{\"alias\": \"as_of_date\", \"type\": \"DATE\", \"name\": \"as_of_date\", \"isdim\": true}, {\"alias\": \"segment_id\", \"type\": \"STRING\", \"name\": \"segment_id\", \"isdim\": true}, {\"alias\": \"horizon_week\", \"type\": \"INT\", \"name\": \"horizon_week\", \"isdim\": true}, {\"alias\": \"week_end_date\", \"type\": \"DATE\", \"name\": \"week_end_date\", \"isdim\": true}, {\"alias\": \"p10\", \"type\": \"DOUBLE\", \"name\": \"p10\", \"isdim\": false}, {\"alias\": \"p50\", \"type\": \"DOUBLE\", \"name\": \"p50\", \"isdim\": false}, {\"alias\": \"p90\", \"type\": \"DOUBLE\", \"name\": \"p90\", \"isdim\": false}, {\"alias\": \"is_latest\", \"type\": \"TINYINT\", \"name\": \"is_latest\", \"isdim\": true}]}]",
+    "dataset_tablenames": "[\"rsingh_casa_alb_gold.v_forecast_path\"]",
+    "uuid": "e6324835-e90e-5f2c-9e4b-ad96796ff621",
+    "imported_uuid": null,
+    "cache_sequence": 0,
+    "dataset_settings": "{}",
+    "search_enabled": false,
+    "dashboards": [
+     9200
+    ],
+    "version_id": 9303,
+    "version_group_id": 9303,
+    "is_active_version": true,
+    "version_name": "casa-alco",
+    "is_named_version": false
+   }
+  },
+  {
+   "model": "datasets.dataset",
+   "pk": 9304,
+   "fields": {
+    "dataconnection": 4,
+    "dataset_name": "rsingh-casa-alb - Weekly balance",
+    "dataset_type": "singletable",
+    "dataset_detail": "rsingh_casa_alb_gold.v_weekly_balance",
+    "dataset_description": "rsingh_casa_alb_gold.v_weekly_balance (sql/dataviz_views.sql)",
+    "dataset_info": "[{\"tablename\": \"rsingh_casa_alb_gold.v_weekly_balance\", \"columns\": [{\"alias\": \"segment_id\", \"type\": \"STRING\", \"name\": \"segment_id\", \"isdim\": true}, {\"alias\": \"irrbb_category\", \"type\": \"STRING\", \"name\": \"irrbb_category\", \"isdim\": true}, {\"alias\": \"week_end_date\", \"type\": \"DATE\", \"name\": \"week_end_date\", \"isdim\": true}, {\"alias\": \"balance_inr_cr\", \"type\": \"DOUBLE\", \"name\": \"balance_inr_cr\", \"isdim\": false}]}]",
+    "dataset_tablenames": "[\"rsingh_casa_alb_gold.v_weekly_balance\"]",
+    "uuid": "d4a3d894-6c9a-5b5b-a102-1d9eb2f253b6",
+    "imported_uuid": null,
+    "cache_sequence": 0,
+    "dataset_settings": "{}",
+    "search_enabled": false,
+    "dashboards": [
+     9200
+    ],
+    "version_id": 9304,
+    "version_group_id": 9304,
+    "is_active_version": true,
+    "version_name": "casa-alco",
+    "is_named_version": false
+   }
+  }
+ ],
+ "version": {
+  "Arcviz Version": "8.1.4.1000",
+  "Raw Timestamp of last commit": "1789380895",
+  "Timestamp of last commit": "Mon Sep 14 12:14:55 2026 +0200",
+  "SHA of last commit": "f57d558a7dcd7cda432e8fffd9d3c1fc60cdfad9",
+  "Description": "8.1.4.1000-4"
+ }
+}

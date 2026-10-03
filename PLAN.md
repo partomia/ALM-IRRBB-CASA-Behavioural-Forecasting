@@ -99,7 +99,14 @@ CDW  Hue reports, time travel     CAI  Streamlit app + model endpoint
 6. **The backfill runs each month-end in its own process** (as Collections, its decision
    12): a killed CAI engine can be reported as `ENGINE_SUCCEEDED`, so a child that exits
    non-zero or is killed fails the job by name, and every period is checked in Impala
-   afterwards. Laptop: 7 s per month-end, 43 s for six.
+   afterwards. Laptop: 7 s per month-end, 43 s for six; CAI: 24 s per month-end, 145 s for
+   six.
+7. **The Data Visualization dashboard is code** (as Churn and Collections):
+   `dataviz/build_dashboard.py` creates the views, the connection and workspace
+   `rsingh-casa-alb` if missing, writes `dataviz/casa_alco_dashboard.json` with fixed
+   UUIDs and imports it into that workspace (the form field `workspace=<name>`; without it
+   the import lands in Private). Views carry `is_latest`, so the monthly run refreshes the
+   dashboard without a rebuild.
 
 ## Method (demo policy, see `config/policy.yaml`)
 
