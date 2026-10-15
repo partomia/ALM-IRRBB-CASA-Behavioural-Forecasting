@@ -181,3 +181,15 @@ Ported `scripts/platform.py` and `config/platform.json` from O-G-Asset-Integrity
   log in API v2 to confirm). The CAI project stays at its earlier commit; the published
   ALCO runs are untouched.
 - `pytest -q`: 85 passed.
+- Repo public again (until this evening). gitleaks over the 24 commits: no leaks; no
+  `.env`, key or keystore file tracked. `deploy_dag.sh` 03:58:34-03:59:01 UTC with no run in
+  flight: repository `rsingh-casa-alb-pipeline` at 7d2d729, DAG job updated, schedule still
+  paused, no run started. Airflow 2.11.2 re-parsed it at 04:00:01: `max_active_runs` 1,
+  `execution_timeout` 3600 s on the four Spark tasks and 6000 s on `cai_monthly_forecast`.
+  The details endpoint returns `dagrun_timeout: None` for this DAG and for `ogx_asset_integrity`,
+  which also sets 6 h: the API does not report it.
+- `rsingh-casa-alb-sync-code` started by hand with `EXPECTED_GIT_SHA=7d2d729081e2`
+  (run `7plogqym64lo0dme`): 2 s scheduling, succeeded at 17 s, so the earlier CI failure was
+  the private repo. The forecast dry run was not repeated (no forecast code changed).
+- When the repo goes private again, `cde repository sync` and the CAI sync job fail again
+  until they get credentials; the deployed DAG and the CAI project keep 7d2d729.
