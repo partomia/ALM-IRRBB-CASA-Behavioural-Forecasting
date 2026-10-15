@@ -88,12 +88,14 @@ def test_impala_points_at_federal():
     assert imp["use_http_transport"] and imp["use_ssl"]
 
 
-def _load_dag(monkeypatch):
-    """The DAG module with stand-ins for the Airflow and Cloudera imports."""
+def _load_dag(monkeypatch, calls=None):
+    """The DAG module with stand-ins for the Airflow and Cloudera imports; calls collects
+    (class name, kwargs) of every DAG and operator built."""
 
     class Op:
         def __init__(self, *a, **k):
-            pass
+            if calls is not None:
+                calls.append((type(self).__name__, k))
 
         def __rshift__(self, other):
             return other
@@ -119,6 +121,20 @@ def _load_dag(monkeypatch):
     for name, mod in mods.items():
         monkeypatch.setitem(sys.modules, name, mod)
     return _load(ROOT / "cde" / "dags" / "casa_alm_dag.py")
+
+
+def test_no_run_can_hold_the_shared_vcluster(monkeypatch):
+    calls = []
+    dag = _load_dag(monkeypatch, calls)
+    (_, dag_kw), *tasks = calls
+    assert dag_kw["max_active_runs"] == 1 and dag_kw["dagrun_timeout"] == dag.DAGRUN_TIMEOUT
+    assert len(tasks) == 5
+    for _, kw in tasks:
+        timeout = kw.get("execution_timeout") or dag_kw["default_args"]["execution_timeout"]
+        assert timeout <= dag.DAGRUN_TIMEOUT
+    forecast = next(kw for _, kw in tasks if kw["task_id"] == "cai_monthly_forecast")
+    assert forecast["execution_timeout"].total_seconds() > dag.CAI_DEADLINE_MIN * 60
+    assert "status[in]running,starting" in DEPLOY_DAG and "exit 1" in DEPLOY_DAG
 
 
 def test_a_dropped_cai_poll_does_not_fail_the_task(monkeypatch):

@@ -44,6 +44,11 @@ TERMINAL_BAD = {"failed", "stopped", "timedout"}
 MONTHLY = "0 6 1 * *"
 CAI_DEADLINE_MIN = 90
 MAX_POLL_ERRORS = 10
+# Runs stuck "running" hold the shared vcluster quota and starve other projects' stages.
+# Spark stages take 1-4 min, plus up to ~25 min queueing behind other demos.
+SPARK_TASK_TIMEOUT = timedelta(minutes=60)
+CAI_TASK_TIMEOUT = timedelta(minutes=CAI_DEADLINE_MIN + 10)
+DAGRUN_TIMEOUT = timedelta(hours=6)
 
 
 def trigger_cai_job(as_of: str, **_):
@@ -94,6 +99,7 @@ default_args = {
     "depends_on_past": False,
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
+    "execution_timeout": SPARK_TASK_TIMEOUT,
 }
 
 with DAG(
@@ -104,6 +110,8 @@ with DAG(
     # the first interval (Sep) closes 1 Oct 06:00; an earlier start would fire a run on deploy
     start_date=datetime(2026, 9, 1, 6),
     catchup=False,
+    max_active_runs=1,
+    dagrun_timeout=DAGRUN_TIMEOUT,
     # Registered paused. Registering unpaused, or unpausing later, runs the latest closed
     # interval at once.
     is_paused_upon_creation=True,
@@ -126,6 +134,7 @@ with DAG(
         python_callable=trigger_cai_job,
         op_kwargs={"as_of": AS_OF},
         retries=0,
+        execution_timeout=CAI_TASK_TIMEOUT,
     )
 
     generate >> validate >> silver >> gold >> forecast

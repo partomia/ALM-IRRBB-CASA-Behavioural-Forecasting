@@ -202,6 +202,28 @@ The app has no Cloudera-only dependency: `docker build -t casa-alm-app .` and ru
 it on parquet exports or against CDW Impala; stress what-ifs call the CAI endpoint
 if `CASA_ENDPOINT_URL` is set (see `Dockerfile`).
 
+### 6. Stopping and starting the demo
+
+`scripts/platform.py` (what it touches: `config/platform.json`; CAI credentials from `.env`,
+the `cdp` and `cde` CLIs use their own profiles):
+
+```bash
+python scripts/platform.py status [--scope platform]
+python scripts/platform.py stop  [--only cai,cde] [--dry-run]
+python scripts/platform.py start [--dry-run]
+python scripts/platform.py stop --scope platform --yes-shared
+```
+
+| Command | Effect |
+|---------|--------|
+| `stop` | stops the app `rsingh-casa-alb-alco` and the model deployment, stops active `rsingh-casa-alb-*` CAI job runs; pauses the `rsingh-casa-alb-orchestration` schedule and kills running or starting `rsingh-casa-alb-*` CDE runs, Spark children first |
+| `start` | unpauses the DAG schedule (Airflow runs the latest closed month at once if it has no run yet), restarts the newest model deployment, then the app |
+| `--scope platform --yes-shared` | also the shared CDW `federal-impala-1`, CDE `federal-cde-vc` and CAI `federal-cml-ws`, in dependency order; sibling demos use them, so only with their owners' consent |
+
+The CAI jobs have no schedules (Airflow and GitHub start them). Tables, the CDE repository
+and python-env, and the Data Visualization dashboard on `IndianBank-Spend-analytics` (no
+suspend in the CDP CLI) stay as they are.
+
 ## Layout
 
 ```
@@ -214,10 +236,10 @@ cai/model/     predict.py (endpoint), test_endpoint.py
 ci/            cai_jobs.py (CAI resources), setup_cai.py, trigger_cai_pipeline.py (GitHub -> CAI)
 app/           Streamlit app + CAI launcher
 dataviz/       build_dashboard.py + the exported Data Visualization dashboard
-config/        casa.yaml (names, storage, model), policy.yaml (caps, buckets, slotting)
+config/        casa.yaml (names, storage, model), policy.yaml (caps, buckets, slotting), platform.json
 sql/           Hue report and time-travel queries, Data Visualization views
 docs/          demo runbook, Data Visualization, project log
-scripts/       run_cde_local.py (CDE jobs on a laptop)
+scripts/       run_cde_local.py (CDE jobs on a laptop), platform.py (status / stop / start)
 ```
 
 ## Sources

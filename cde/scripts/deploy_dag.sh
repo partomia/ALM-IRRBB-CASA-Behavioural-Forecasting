@@ -8,6 +8,16 @@ set -euo pipefail
 REPO_NAME="${REPO_NAME:-rsingh-casa-alb-pipeline}"
 DAG_JOB_NAME="${DAG_JOB_NAME:-rsingh-casa-alb-orchestration}"
 DAG_PATH="cde/dags/casa_alm_dag.py"
+JOB_PREFIX="${JOB_PREFIX:-rsingh-casa-alb-}"
+
+# In-flight runs keep the old DAG, and a redeploy under them leaves tasks half on each version.
+in_flight="$(cde run list --filter 'status[in]running,starting' --filter "job[rlike]^${JOB_PREFIX}" \
+  | python3 -c "import json,sys; print(' '.join(f\"{r['job']}#{r['id']}\" for r in json.load(sys.stdin) or []))")"
+if [[ -n "${in_flight}" ]]; then
+  echo "Runs in flight, not redeploying: ${in_flight}"
+  echo "Wait for them to end (or: python scripts/platform.py stop --only cde), then re-run."
+  exit 1
+fi
 
 cde repository sync --name "${REPO_NAME}"
 
