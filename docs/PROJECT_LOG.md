@@ -175,5 +175,9 @@ Ported `scripts/platform.py` and `config/platform.json` from O-G-Asset-Integrity
   attribute 'system'`. Running a file in `scripts/` puts that folder first on `sys.path`, so
   PySpark's `import platform` loaded `scripts/platform.py`. Both scripts now drop their own
   folder from `sys.path`; a test runs every `scripts/*.py` that way. The CI step passes
-  locally (scratch warehouse, 4,004 gold rows exported).
+  locally (scratch warehouse, 4,004 gold rows exported). CI on b04c889: `test` green;
+  `cai-pipeline` failed at `rsingh-casa-alb-sync-code` (run `9t548oux7cxz31ga`), which runs
+  `git fetch origin` in the CAI project: the same private-repo cause as the CDE sync (no run
+  log in API v2 to confirm). The CAI project stays at its earlier commit; the published
+  ALCO runs are untouched.
 - `pytest -q`: 85 passed.
