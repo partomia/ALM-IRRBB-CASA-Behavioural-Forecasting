@@ -20,6 +20,9 @@ import os
 import sys
 from pathlib import Path
 
+# scripts/platform.py would shadow the stdlib `platform` that PySpark imports
+sys.path[:] = [p for p in sys.path if Path(p or ".").resolve() != Path(__file__).resolve().parent]
+
 ROOT = Path(__file__).resolve().parent.parent
 JOBS = ROOT / "cde" / "jobs"
 ICEBERG_PACKAGE = "org.apache.iceberg:iceberg-spark-runtime-4.0_2.13:1.10.0"

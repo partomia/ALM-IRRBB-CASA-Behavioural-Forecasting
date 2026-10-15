@@ -2,6 +2,8 @@
 runs are killed before orchestration runs, dry runs act on nothing, and the shared services
 need --yes-shared."""
 import json
+import subprocess
+import sys
 
 import pytest
 
@@ -91,6 +93,16 @@ def test_platform_scope_needs_yes_shared(platform, monkeypatch):
         platform.main(["stop", "--scope", "platform"])
     with pytest.raises(SystemExit, match="unknown layers"):
         platform.main(["stop", "--only", "kafka"])
+
+
+@pytest.mark.parametrize("script", sorted(p.name for p in (ROOT / "scripts").glob("*.py")))
+def test_scripts_do_not_shadow_stdlib_platform(script):
+    """`python scripts/x.py` puts scripts/ first on sys.path, where platform.py would shadow the stdlib."""
+    code = ("import runpy, sys; sys.path.insert(0, 'scripts'); "
+            f"runpy.run_path('scripts/{script}', run_name='not_main'); "
+            "import platform; assert callable(platform.system), platform.__file__")
+    out = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr[-500:]
 
 
 def test_env_values_are_never_printed(platform, tmp_path, monkeypatch, capsys):

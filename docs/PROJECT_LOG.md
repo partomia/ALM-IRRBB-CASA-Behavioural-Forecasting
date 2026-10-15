@@ -141,3 +141,39 @@ were left as they were.
   `823jji5tkk19tdli` to c1ddc4df2b2d (18 s scheduling, 3 s running, requirements
   unchanged), then the monthly job as a dry run, `bjcshu7d50733kau` (13 s scheduling, 24 s
   running, `triggered_by=github`). No row written: `casa_model_run` still has 7 rows.
+
+## 2026-10-15: platform stop/start/status (Cursor, Opus 5.5)
+
+Ported `scripts/platform.py` and `config/platform.json` from O-G-Asset-Integrity-Lakehouse
+(that repo not edited). Project scope by default; `--scope platform` needs `--yes-shared`.
+
+- Live inventory (read-only, 03:20-03:45 UTC). CAI `rsingh-casa-alb` on `federal-cml-ws`:
+  app `rsingh-casa-alb-alco` stopped; model `rsingh-casa-alb-model`, one build (`a722a745`),
+  deployment `bf93c4a4` stopped; jobs sync-code, monthly-forecast, backfill-alco-history, none
+  scheduled, no active runs. CDE prefix `rsingh-casa-alb-`: four Spark jobs (unscheduled) and
+  `rsingh-casa-alb-orchestration` (`0 6 1 * *`) with its schedule **paused** (unpaused on
+  3 Oct; paused since by someone else), so no 1 Oct run; last runs 262-270 on 3 Oct, all
+  succeeded; nothing running or starting. No NiFi process group and none of the 45 Kafka
+  topics belong to this project: Data Hubs dropped from the config. Shared: CDW
+  `federal-impala-1` Running, Data Visualization `IndianBank-Spend-analytics` Running (the
+  `CASA_CDV_URL` instance; `federal-data-viz` is not used), CDE `federal-cde-vc`
+  AppInstalled, CAI `federal-cml-ws` modify:finished.
+- `status` and `status --scope platform` report the above. `stop --dry-run`: nothing to
+  stop. `start --dry-run`: would unpause the DAG schedule, restart deployment `bf93c4a4`,
+  start the app. `stop --scope platform --dry-run`: would suspend `federal-cml-ws`,
+  `federal-cde-vc`, `federal-impala-1`. No real stop or start run.
+- The cde CLI has `job schedule pause` / `unpause`; there is no `resume` (the OGX script
+  calls `resume`, so its start would fail at that step).
+- DAG: `max_active_runs=1`, `dagrun_timeout` 6 h, `execution_timeout` 60 min per Spark task
+  and 100 min for the CAI task (its own deadline is 90 min). `deploy_dag.sh` now exits when
+  a `rsingh-casa-alb-*` run is running or starting.
+- DAG redeploy not done: `cde repository sync` fails with "authentication required:
+  Repository not found". The GitHub repo is now private and the Git repository resource has
+  no credential, so CDE still holds 040f41b. The deployed DAG keeps the old settings until
+  the resource gets a credential (or the jobs move to a files resource).
+- CI on f23d403 failed at `python scripts/run_cde_local.py`: `module 'platform' has no
+  attribute 'system'`. Running a file in `scripts/` puts that folder first on `sys.path`, so
+  PySpark's `import platform` loaded `scripts/platform.py`. Both scripts now drop their own
+  folder from `sys.path`; a test runs every `scripts/*.py` that way. The CI step passes
+  locally (scratch warehouse, 4,004 gold rows exported).
+- `pytest -q`: 85 passed.
